@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>WERTYUOP: PANIC CONTROL</title>
+    <style>
+        /* --- ОСНОВА --- */
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; user-select: none; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        #monitor { width: 1024px; height: 768px; background: #000; border: 20px solid #222; border-radius: 10px; position: relative; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+        .scanlines { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%); background-size: 100% 4px; }
+        
+        /* ЭКРАНЫ */
+        .screen { width: 100%; height: 100%; display: none; position: absolute; top: 0; left: 0; }
+        
+        /* 1. LOGIN */
+        #login-screen { background: #000080; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; }
+        #login-box { background: #c0c0c0; color: black; padding: 20px; border: 2px solid white; text-align: center; }
+        .sticker { position: absolute; bottom: 20px; right: 20px; background: yellow; color: black; padding: 10px; transform: rotate(-5deg); font-family: 'Comic Sans MS'; cursor: pointer; }
+
+        /* 2. DESKTOP */
+        #desktop { background: #008080; cursor: default; }
+        .icon { width: 80px; margin: 20px; color: white; text-align: center; cursor: pointer; display: inline-block; vertical-align: top; }
+        .icon-img { width: 40px; height: 40px; background: #555; margin: 0 auto 5px; border: 2px solid white; background-size: cover; }
+        
+        /* WINDOWS */
+        .window { position: absolute; background: #c0c0c0; border: 2px solid white; border-right-color: gray; border-bottom-color: gray; display: none; flex-direction: column; box-shadow: 5px 5px 10px #000; }
+        .title-bar { background: #000080; color: white; padding: 3px; font-weight: bold; display: flex; justify-content: space-between; }
+        .win-body { padding: 10px; flex-grow: 1; overflow-y: auto; background: white; color: black; }
+
+        /* APPS */
+        #game-canvas { width: 100%; height: 300px; background: #001a33; position: relative; cursor: crosshair; }
+        #roblox-canvas { width: 100%; height: 300px; background: linear-gradient(#333, #111); position: relative; cursor: pointer; }
+        .target { position: absolute; width: 30px; height: 30px; background: red; border-radius: 50%; }
+        .blox-char { position: absolute; width: 40px; height: 60px; background: yellow; border: 2px solid black; }
+
+        /* CHAT */
+        #chat-history { height: 250px; background: #fff; border: 2px inset; padding: 5px; overflow-y: auto; font-family: 'Tahoma'; font-size: 14px; }
+        .msg { margin-bottom: 5px; } 
+        .me { color: blue; } 
+        .him { color: red; font-weight: bold; } 
+        .gugu { color: green; font-weight: bold; }
+        .sys { color: gray; font-style: italic; }
+        #typing-indicator { font-size: 12px; color: gray; font-style: italic; display: none; margin-top: 5px; }
+
+        /* 3. ROOM & HORROR */
+        #room-scene { background: #111; }
+        #win-obj { position: absolute; top: 80px; left: 100px; width: 200px; height: 200px; background: #001; border: 8px solid #3e2723; overflow: hidden; cursor: pointer; }
+        #door-obj { position: absolute; top: 50px; right: 150px; width: 180px; height: 400px; background: #2e1d15; border: 5px solid #1a1005; cursor: pointer; }
+        #face { position: absolute; bottom: 0; left: 60px; width: 80px; height: 100px; background: white; border-radius: 50%; display: none; }
+        .plank { position: absolute; width: 100%; height: 20px; background: #5d4037; border: 1px solid black; transform: rotate(-2deg); }
+
+        /* 4. HIDING MINI-GAME */
+        #hiding-spot { background: #000; display: none; justify-content: center; align-items: center; flex-direction: column; color: #fff; }
+        
+        #skill-check-container {
+            width: 400px; height: 30px; background: #333; border: 2px solid #555; position: relative;
+            margin-top: 20px; border-radius: 15px; overflow: hidden;
+        }
+        #safe-zone {
+            position: absolute; left: 40%; width: 20%; height: 100%; background: lime; opacity: 0.6;
+        }
+        #marker {
+            position: absolute; left: 0; width: 10px; height: 100%; background: red; box-shadow: 0 0 10px red;
+        }
+        #panic-bar-container {
+            width: 400px; height: 20px; background: #222; border: 1px solid white; margin-top: 10px;
+        }
+        #panic-fill {
+            width: 0%; height: 100%; background: red; transition: width 0.2s;
+        }
+
+        /* 5. TIME SKIP */
+        #time-skip { background: black; color: white; display: none; justify-content: center; align-items: center; font-size: 30px; flex-direction: column; }
+    </style>
+</head>
+<body>
+
+<div id="monitor">
+    <div class="scanlines"></div>
+
+    <div id="login-screen" class="screen" style="display:flex;">
+        <div id="login-box">
+            <h3>WINDOWS LOGIN</h3>
+            <input type="password" id="pass-input" placeholder="Password" onkeydown="if(event.key==='Enter') login()">
+            <button onclick="login()">-></button>
+        </div>
+        <div class="sticker" onclick="alert('1234')">1234</div>
+    </div>
+
+    <div id="desktop" class="screen">
+        <div class="icon" onclick="openGame('gta')"><div class="icon-img" style="background:purple;"></div>GTA V</div>
+        <div class="icon" id="roblox-icon" onclick="openGame('roblox')" style="display:none;"><div class="icon-img" style="background:red;"></div>ROBLOX</div>
+        <div class="icon" onclick="openChat()"><div class="icon-img" style="background:blue;"></div>Chat</div>
+
+        <div id="win-gta" class="window" style="top:50px; left:100px; width:600px; height:450px;">
+            <div class="title-bar"><span>GTA V</span><div style="cursor:pointer;" onclick="closeWin('gta')">x</div></div>
+            <div class="win-body" style="background:#222;">
+                <div id="game-canvas"><div style="color:white; padding:10px;">KILLS: <span id="kills">0</span>/3</div></div>
+            </div>
+        </div>
+
+        <div id="win-roblox" class="window" style="top:60px; left:120px; width:600px; height:450px;">
+            <div class="title-bar" style="background:#cc0000;"><span>ROBLOX</span><div style="cursor:pointer;" onclick="closeWin('roblox')">x</div></div>
+            <div class="win-body" style="background:#333;">
+                <div id="roblox-canvas" onclick="robloxClick()">
+                    <div id="gugushka-char" class="blox-char" style="top:150px; left:200px; background:lime; display:none;"></div>
+                    <div style="color:white; padding:10px;">Жми, чтобы прыгать!</div>
+                </div>
+                <div style="background:rgba(0,0,0,0.5); color:white; padding:5px; height:50px; overflow-y:auto;" id="roblox-chat">[System]: Welcome!</div>
+            </div>
+        </div>
+
+        <div id="win-chat" class="window" style="top:100px; left:300px; width:450px; height:400px;">
+            <div class="title-bar"><span>Messenger</span><div style="cursor:pointer;" onclick="closeWin('chat')">x</div></div>
+            <div class="win-body">
+                <div id="chat-history"></div>
+                <div id="typing-indicator"></div>
+                <div style="margin-top:5px; display:flex;">
+                    <input type="text" id="chat-input" style="flex-grow:1;" placeholder="Пиши здесь..." onkeydown="if(event.key==='Enter') sendBtn()">
+                    <button onclick="sendBtn()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="room-scene" class="screen">
+        <h2 id="room-msg" style="color:red; text-align:center;">БАРРИКАДИРУЙ ОКНА И ДВЕРИ!</h2>
+        <div id="win-obj" onclick="barricade('win')">
+            <div id="face"><div style="position:absolute; top:30px; left:20px; width:10px; height:10px; background:black;"></div><div style="position:absolute; top:30px; right:20px; width:10px; height:10px; background:black;"></div></div>
+        </div>
+        <div id="door-obj" onclick="barricade('door')"></div>
+        <button id="hide-btn" onclick="startHiding()" style="display:none; position:absolute; bottom:50px; left:40%; padding:10px; background:red; color:white;">ПРЯТАТЬСЯ</button>
+    </div>
+
+    <div id="hiding-spot" class="screen">
+        <h1 style="color:#fff;">УСПОКОЙ СЕРДЦЕБИЕНИЕ!</h1>
+        <p>Жми [ПРОБЕЛ], когда курсор в зеленой зоне.</p>
+        
+        <div id="skill-check-container">
+            <div id="safe-zone"></div>
+            <div id="marker"></div>
+        </div>
+
+        <p>УРОВЕНЬ ПАНИКИ:</p>
+        <div id="panic-bar-container">
+            <div id="panic-fill"></div>
+        </div>
+
+        <div id="survival-timer" style="margin-top:20px; font-size: 24px;">15</div>
+    </div>
+
+    <div id="time-skip" class="screen">
+        <h1 id="time-text">ДЕНЬ 1</h1>
+    </div>
+
+</div>
+
+<script>
+    let phase = 0; // 0=Intro, 1=RobloxArc, 2=Finale
+    let kills = 0;
+    let planksW=0, planksD=0;
+    let storyStep = 0;
+    let isTransitioning = false;
+
+    // LOGIN
+    function login() {
+        if(document.getElementById('pass-input').value==="1234"){
+            document.getElementById('login-screen').style.display='none';
+            document.getElementById('desktop').style.display='block';
+            if(phase===0) alert("Запусти GTA V.");
+            if(phase===1) {
+                 alert("Запусти ROBLOX (Красная иконка).");
+                 document.getElementById('roblox-icon').style.display='inline-block';
+            }
+            if(phase===2) {
+                alert("Ты вернулся с продуктами... Напиши что-нибудь.");
+                openChat();
+                setTimeout(()=>finalMisha(), 2000);
+            }
+        } else alert("1234");
+    }
+
+    // WINDOWS
+    function openGame(g) { document.getElementById('win-'+g).style.display='flex'; if(g==='gta') spawnTarget(); if(g==='roblox') startRobloxLogic(); }
+    function closeWin(g) { document.getElementById('win-'+g).style.display='none'; }
+    function openChat() { document.getElementById('win-chat').style.display='flex'; }
+    
+    function spawnTarget() {
+        if(kills>=3) {
+            closeWin('gta'); openChat();
+            startIntroChat();
+            return;
+        }
+        let t = document.createElement('div'); t.className='target';
+        t.style.top=Math.random()*250+'px'; t.style.left=Math.random()*550+'px';
+        t.onmousedown=function(){this.remove(); kills++; document.getElementById('kills').innerText=kills; spawnTarget();};
+        document.getElementById('game-canvas').appendChild(t);
+    }
+
+    // CHAT UTILS
+    function addMsg(n, t, type) {
+        let h=document.getElementById('chat-history');
+        h.innerHTML+=`<div class="msg ${type}"><b>${n}:</b> ${t}</div>`;
+        h.scrollTop=h.scrollHeight;
+    }
+    function showTyping(who) { document.getElementById('typing-indicator').innerText=who+" печатает..."; document.getElementById('typing-indicator').style.display='block'; }
+    function hideTyping() { document.getElementById('typing-indicator').style.display='none'; }
+
+    // CHAT SCENARIOS
+    function startIntroChat() {
+        addMsg("System", "Match finished.", "sys");
+        setTimeout(()=>addMsg("Misha25k", "Неплохо стреляешь.", "him"), 1000);
+        storyStep = 0;
+    }
+
+    function startRobloxLogic() {
+        setTimeout(()=>{
+            document.getElementById('gugushka-char').style.display='block';
+            addRobloxChat("Gugushka: Привет! Давай дружить?");
+            setTimeout(()=>{ closeWin('roblox'); openChat(); startGugushkaDialog(); }, 3000);
+        }, 1000);
+    }
+    function robloxClick() { addRobloxChat("You jumped!"); }
+    function addRobloxChat(t) { document.getElementById('roblox-chat').innerHTML += `<div>${t}</div>`; }
+
+    function startGugushkaDialog() {
+        document.getElementById('chat-history').innerHTML = ""; 
+        addMsg("Gugushka", "Привет, это я из Роблокса!", "gugu");
+        showTyping("Gugushka");
+        setTimeout(()=>{ hideTyping(); addMsg("Gugushka", "Что случилось? Ты молчишь.", "gugu"); }, 2000);
+        storyStep = 0;
+    }
+
+    function sendBtn() {
+        let i=document.getElementById('chat-input');
+        if(!i.value) return;
+        addMsg("You", i.value, "me");
+        i.value="";
+
+        // PHASE 0: MISHA INTRO
+        if(phase === 0) {
+            if(storyStep === 0) {
+                 setTimeout(()=>addMsg("Misha25k", "Го дружить?", "him"), 1500);
+                 storyStep++;
+            } else if (storyStep === 1) {
+                 setTimeout(()=>addMsg("Misha25k", "Классная аватарка. Это вид из окна?", "him"), 2000);
+                 storyStep++;
+            } else if (storyStep === 2) {
+                 setTimeout(()=>addMsg("Misha25k", "Я живу напротив. Вижу тебя.", "him"), 2000);
+                 setTimeout(()=>{
+                     addMsg("Misha25k", "КРАСНАЯ ФУТБОЛКА.", "him");
+                     addMsg("System", "INTRUDER ALERT", "sys");
+                     setTimeout(()=>startRoom(1), 3000);
+                 }, 4000);
+            }
+        }
+
+        // PHASE 1: GUGUSHKA
+        if(phase === 1) {
+            if(storyStep === 0) {
+                showTyping("Gugushka");
+                setTimeout(()=>{ hideTyping(); addMsg("Gugushka", "Жесть... Какой ник у этого маньяка?", "gugu"); storyStep++; }, 1500);
+            }
+            else if(storyStep === 1) {
+                showTyping("Gugushka");
+                setTimeout(()=>{ hideTyping(); addMsg("Gugushka", "Пробиваю...", "gugu"); 
+                    setTimeout(()=>{ addMsg("Gugushka", "О БОЖЕ. ЭТО ОН! ОН В РОЗЫСКЕ!", "gugu"); triggerMishaThreat(); }, 2000);
+                }, 1500);
+            }
+        }
+        
+        // PHASE 2: FINALE PREP
+        if(phase === 2 && storyStep === 10) {
+            setTimeout(()=>addMsg("Gugushka", "Береги себя.", "gugu"), 1000);
+            setTimeout(()=>startTimeSkip("СПУСТЯ 30 МИНУТ...", 3), 3000);
+        }
+
+        // PHASE 3: ENDING
+        if(phase === 3) {
+            setTimeout(()=>addMsg("Misha25k", "Ничего. Смирись с этим.", "him"), 1500);
+            setTimeout(()=>{ document.body.innerHTML = "<h1 style='color:red; font-size:50px; text-align:center;'>ПРОДОЛЖЕНИЕ СЛЕДУЕТ...</h1>"; }, 4000);
+        }
+    }
+
+    function triggerMishaThreat() {
+        setTimeout(()=>{
+            addMsg("Misha25k", "Жди гостей.", "him");
+            setTimeout(()=>{
+                addMsg("Gugushka", "ЗАКОЛОТИ ДВЕРЬ! БЫСТРЕЕ!", "gugu");
+                setTimeout(()=>startRoom(2), 2000);
+            }, 2000);
+        }, 1000);
+    }
+
+    // HORROR ROOM
+    function startRoom(p) {
+        document.getElementById('desktop').style.display='none';
+        document.getElementById('room-scene').style.display='block';
+        isTransitioning = false;
+        planksD=0; planksW=0;
+        if(p===1) {
+            document.getElementById('face').style.display='block';
+            document.getElementById('room-msg').innerText="ОКНО И ДВЕРЬ!";
+        } else {
+            document.getElementById('room-msg').innerText="ЗАКОЛОТИ ДВЕРЬ (ОН ИДЕТ)!";
+            planksW=5;
+        }
+    }
+
+    function barricade(t) {
+        if(isTransitioning) return;
+        let p=document.createElement('div'); p.className='plank'; p.style.top=Math.random()*150+'px';
+        if(t==='win' && planksW<5) { document.getElementById('win-obj').appendChild(p); planksW++; }
+        if(t==='door' && planksD<5) { document.getElementById('door-obj').appendChild(p); planksD++; }
+        
+        if(planksW>=5 && planksD>=5) {
+            if(phase===0) { 
+                document.getElementById('face').style.display='none';
+                document.getElementById('hide-btn').style.display='block';
+            }
+            if(phase===1) { 
+                isTransitioning = true;
+                document.getElementById('room-msg').innerText = "ФУХ... ВРОДЕ УСПЕЛ...";
+                document.getElementById('room-msg').style.color = "lime";
+                setTimeout(() => {
+                    alert("*КТО-ТО ДЕРГАЕТ РУЧКУ ДВЕРИ*");
+                    setTimeout(()=>startTimeSkip("ДЕНЬ 1", 2), 2000);
+                }, 1000);
+            }
+        }
+    }
+
+    // --- MINI-GAME LOGIC ---
+    let panic = 0;
+    let markerPos = 0;
+    let direction = 1;
+    let gameInterval;
+    let timeLeft = 15;
+
+    function startHiding() {
+        document.getElementById('room-scene').style.display='none';
+        document.getElementById('hiding-spot').style.display='flex';
+        
+        panic = 30;
+        timeLeft = 15;
+        
+        gameInterval = setInterval(gameLoop, 20);
+        document.addEventListener('keydown', checkHit);
+    }
+
+    function gameLoop() {
+        // Move marker
+        markerPos += 2 * direction;
+        if(markerPos > 390 || markerPos < 0) direction *= -1;
+        document.getElementById('marker').style.left = markerPos + 'px';
+
+        // Passive panic increase
+        panic += 0.1;
+        document.getElementById('panic-fill').style.width = panic + "%";
+
+        // Time
+        if(Math.random() > 0.95) timeLeft -= 0.1; // Slow timer
+        document.getElementById('survival-timer').innerText = Math.floor(timeLeft);
+
+        if(panic >= 100) {
+            clearInterval(gameInterval);
+            document.body.innerHTML = "<h1 style='color:red; font-size:100px;'>ТЫ ВПАЛ В ПАНИКУ.<br>ОН НАШЕЛ ТЕБЯ.</h1>";
+        }
+        
+        if(timeLeft <= 0) {
+            clearInterval(gameInterval);
+            document.removeEventListener('keydown', checkHit);
+            startTimeSkip("УТРО...", 1);
+        }
+    }
+
+    function checkHit(e) {
+        if(e.code === 'Space') {
+            // Safe zone is 40% to 60% of 400px container (160px to 240px)
+            if(markerPos > 160 && markerPos < 240) {
+                panic -= 15; // Success
+                if(panic < 0) panic = 0;
+                document.getElementById('safe-zone').style.background = 'white';
+                setTimeout(()=>document.getElementById('safe-zone').style.background = 'lime', 100);
+            } else {
+                panic += 20; // Fail
+            }
+        }
+    }
+
+    // TIME SKIP
+    function startTimeSkip(text, nextPhase) {
+        document.getElementById('room-scene').style.display='none';
+        document.getElementById('hiding-spot').style.display='none';
+        document.getElementById('win-chat').style.display='none'; 
+        let ts = document.getElementById('time-skip');
+        ts.style.display='flex';
+        document.getElementById('time-text').innerText = text;
+        
+        setTimeout(()=>{
+            ts.style.display='none';
+            if(nextPhase===1) { phase=1; document.getElementById('login-screen').style.display='flex'; }
+            if(nextPhase===2) { // День 1
+                phase=2;
+                document.getElementById('login-screen').style.display='flex';
+                document.getElementById('chat-history').innerHTML="";
+                addMsg("Gugushka", "Ну че, ты там живой хоть?", "gugu");
+                storyStep=10;
+            }
+            if(nextPhase===3) { phase=3; document.getElementById('login-screen').style.display='flex'; }
+        }, 3000);
+    }
+
+    function finalMisha() {
+        addMsg("Misha25k", "Как я понял, ты уже всё сам понял.", "him");
+        alert("ЗАДАНИЕ: Напиши 'ЧТО ТЕБЕ НУЖНО?'");
+    }
+
+</script>
+</body>
+</html>

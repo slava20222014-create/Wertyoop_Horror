@@ -1,0 +1,3595 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>WERTYUOP HORROR: MISTERGEMER777 MODS</title>
+    <style>
+        /* --- ОСНОВА --- */
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; user-select: none; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        #monitor { width: 1024px; height: 768px; background: #000; border: 20px solid #222; border-radius: 10px; position: relative; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+        .scanlines { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%); background-size: 100% 4px; }
+        
+        /* ЭКРАНЫ */
+        .screen { width: 100%; height: 100%; display: none; position: absolute; top: 0; left: 0; }
+        
+        /* 1. LOGIN */
+        #login-screen { background: #000080; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; }
+        #login-box { background: #c0c0c0; color: black; padding: 20px; border: 2px solid white; text-align: center; }
+        .sticker { position: absolute; bottom: 20px; right: 20px; background: yellow; color: black; padding: 10px; transform: rotate(-5deg); font-family: 'Comic Sans MS'; cursor: pointer; }
+
+        /* 2. DESKTOP */
+        #desktop { background: #008080; cursor: default; }
+        .icon { width: 80px; margin: 20px; color: white; text-align: center; cursor: pointer; display: inline-block; vertical-align: top; }
+        .icon-img { width: 40px; height: 40px; background: #555; margin: 0 auto 5px; border: 2px solid white; background-size: cover; }
+        
+        /* НАСТРОЙКИ ИКОНКА */
+        #settings-icon { display: inline-block; }
+        
+        /* WINDOWS */
+        .window { position: absolute; background: #c0c0c0; border: 2px solid white; border-right-color: gray; border-bottom-color: gray; display: none; flex-direction: column; box-shadow: 5px 5px 10px #000; }
+        .title-bar { background: #000080; color: white; padding: 3px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .title-bar-close { background: #c0c0c0; color: black; width: 20px; height: 20px; border: 2px solid; border-top-color: white; border-left-color: white; border-right-color: black; border-bottom-color: black; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .title-bar-close:active { border-top-color: black; border-left-color: black; border-right-color: white; border-bottom-color: white; }
+        .win-body { padding: 10px; flex-grow: 1; overflow-y: auto; background: white; color: black; }
+
+        /* APPS */
+        #game-canvas { width: 100%; height: 300px; background: #001a33; position: relative; cursor: crosshair; }
+        #roblox-canvas { width: 100%; height: 300px; background: linear-gradient(#333, #111); position: relative; cursor: pointer; }
+        .target { position: absolute; width: 30px; height: 30px; background: red; border-radius: 50%; }
+        .blox-char { position: absolute; width: 40px; height: 60px; background: yellow; border: 2px solid black; }
+
+        /* CHAT */
+        #chat-history { height: 250px; background: #fff; border: 2px inset; padding: 5px; overflow-y: auto; font-family: 'Tahoma'; font-size: 14px; }
+        .msg { margin-bottom: 5px; } 
+        .me { color: blue; } 
+        .him { color: red; font-weight: bold; } 
+        .gugu { color: green; font-weight: bold; }
+        .sys { color: gray; font-style: italic; }
+        #typing-indicator { font-size: 12px; color: gray; font-style: italic; display: none; margin-top: 5px; }
+
+        /* 3. ROOM & HORROR */
+        #room-scene { background: #111; }
+        #win-obj { position: absolute; top: 80px; left: 100px; width: 200px; height: 200px; background: #001; border: 8px solid #3e2723; overflow: hidden; cursor: pointer; }
+        #door-obj { position: absolute; top: 50px; right: 150px; width: 180px; height: 400px; background: #2e1d15; border: 5px solid #1a1005; cursor: pointer; }
+        #face { position: absolute; bottom: 0; left: 60px; width: 80px; height: 100px; background: white; border-radius: 50%; display: none; }
+        .plank { position: absolute; width: 100%; height: 20px; background: #5d4037; border: 1px solid black; transform: rotate(-2deg); }
+
+        /* 4. HIDING MINI-GAME */
+        #hiding-spot { background: #000; display: none; justify-content: center; align-items: center; flex-direction: column; color: #fff; }
+        
+        #skill-check-container {
+            width: 400px; height: 30px; background: #333; border: 2px solid #555; position: relative;
+            margin-top: 20px; border-radius: 15px; overflow: hidden;
+        }
+        #safe-zone {
+            position: absolute; left: 40%; width: 20%; height: 100%; background: lime; opacity: 0.6;
+        }
+        #marker {
+            position: absolute; left: 0; width: 10px; height: 100%; background: red; box-shadow: 0 0 10px red;
+        }
+        #panic-bar-container {
+            width: 400px; height: 20px; background: #222; border: 1px solid white; margin-top: 10px;
+        }
+        #panic-fill {
+            width: 0%; height: 100%; background: red; transition: width 0.2s;
+        }
+
+        /* 5. TIME SKIP */
+        #time-skip { background: black; color: white; display: none; justify-content: center; align-items: center; font-size: 30px; flex-direction: column; }
+
+        /* 6. DISCORD */
+        #discord-screen { background: #36393f; display: none; flex-direction: column; position: relative; }
+        .discord-sidebar { width: 250px; background: #202225; color: white; padding: 15px; height: 100%; position: absolute; left: 0; top: 0; overflow-y: auto; }
+        .discord-main { margin-left: 250px; height: 100%; display: flex; flex-direction: column; }
+        .discord-chat { flex-grow: 1; padding: 20px; overflow-y: auto; background: #36393f; }
+        .discord-input { padding: 15px; background: #40444b; display: flex; }
+        .discord-input input { flex-grow: 1; background: #40444b; border: none; color: white; padding: 10px; border-radius: 5px; }
+        .discord-input button { margin-left: 10px; background: #5865f2; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        .discord-msg { margin-bottom: 15px; color: white; }
+        .discord-avatar { width: 40px; height: 40px; border-radius: 50%; display: inline-block; vertical-align: top; margin-right: 10px; background-size: cover; background-position: center; }
+        .discord-name { font-weight: bold; color: #fff; }
+        .discord-time { color: #72767d; font-size: 12px; margin-left: 10px; }
+        .discord-content { margin-top: 5px; margin-left: 50px; }
+        .channel { padding: 10px; cursor: pointer; border-radius: 5px; margin-bottom: 5px; }
+        .channel:hover { background: #3a3c42; }
+        .channel.active { background: #4f545c; }
+        .discord-close { position: absolute; top: 5px; right: 5px; background: #c0c0c0; color: black; width: 20px; height: 20px; border: 2px solid; border-top-color: white; border-left-color: white; border-right-color: black; border-bottom-color: black; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; font-size: 14px; z-index: 100; }
+        .discord-close:active { border-top-color: black; border-left-color: black; border-right-color: white; border-bottom-color: white; }
+        
+        /* НАСТРОЙКИ DISCORD */
+        .discord-settings { background: #2f3136; padding: 20px; margin-top: 20px; border-radius: 8px; }
+        .discord-settings input, .discord-settings select { width: 100%; padding: 8px; margin: 8px 0; background: #40444b; border: 1px solid #202225; color: white; border-radius: 4px; }
+        .discord-settings button { background: #5865f2; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; width: 100%; }
+        
+        /* АВАТАРКИ */
+        .avatar-select { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
+        .avatar-option { width: 50px; height: 50px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+        .avatar-option:hover { border-color: #5865f2; }
+        .avatar-option.selected { border-color: #00ff00; box-shadow: 0 0 10px #00ff00; }
+        
+        /* TRUSIKI SHOW СЕРВЕР */
+        .trusiki-banner { background: linear-gradient(45deg, #ff6b6b, #4ecdc4); padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-weight: bold; }
+        .online-user { display: flex; align-items: center; padding: 5px; border-radius: 5px; margin-bottom: 5px; }
+        .online-user:hover { background: #3a3c42; }
+        .user-status { width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+        .status-online { background: #3ba55c; }
+        .status-idle { background: #faa81a; }
+        .status-dnd { background: #ed4245; }
+        .status-offline { background: #747f8d; }
+
+        /* 7. BROWSER */
+        #browser-screen { background: white; display: none; flex-direction: column; position: relative; }
+        .browser-bar { background: #f1f1f1; padding: 10px; display: flex; align-items: center; border-bottom: 1px solid #ccc; }
+        .browser-url { flex-grow: 1; margin: 0 10px; padding: 5px; border: 1px solid #ccc; }
+        .browser-tabs { background: #e0e0e0; padding: 5px; display: flex; }
+        .browser-tab { padding: 5px 15px; background: white; margin-right: 5px; border: 1px solid #ccc; border-bottom: none; cursor: pointer; }
+        .browser-tab.active { background: #fff; border-bottom: 1px solid white; }
+        .browser-content { flex-grow: 1; overflow-y: auto; }
+        .browser-close { position: absolute; top: 5px; right: 5px; background: #c0c0c0; color: black; width: 20px; height: 20px; border: 2px solid; border-top-color: white; border-left-color: white; border-right-color: black; border-bottom-color: black; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; font-size: 14px; z-index: 100; }
+        .browser-close:active { border-top-color: black; border-left-color: black; border-right-color: white; border-bottom-color: white; }
+        
+        /* 8. НАСТРОЙКИ СИСТЕМЫ */
+        .settings-option { margin: 15px 0; }
+        .settings-label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .color-picker { display: flex; gap: 10px; margin-top: 10px; }
+        .color-option { width: 40px; height: 40px; border-radius: 5px; cursor: pointer; border: 2px solid transparent; }
+        .color-option:hover { border-color: #000; }
+        .color-option.selected { border-color: #00ff00; box-shadow: 0 0 10px #00ff00; }
+        
+        /* КАЛЬКУЛЯТОР */
+        .calculator { background: #c0c0c0; padding: 20px; border: 2px solid white; border-right-color: gray; border-bottom-color: gray; }
+        .calc-display { background: #000; color: #0f0; padding: 10px; margin-bottom: 10px; text-align: right; font-family: 'Courier New'; font-size: 24px; min-height: 40px; border: 2px inset; }
+        .calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+        .calc-btn { padding: 15px; background: #f0f0f0; border: 2px solid; border-top-color: white; border-left-color: white; border-right-color: gray; border-bottom-color: gray; font-size: 18px; cursor: pointer; text-align: center; }
+        .calc-btn:active { border-top-color: gray; border-left-color: gray; border-right-color: white; border-bottom-color: white; }
+        .calc-btn.operator { background: #ff9900; color: white; }
+        .calc-btn.equals { background: #00aa00; color: white; }
+        .calc-btn.clear { background: #ff4444; color: white; }
+        
+        /* ИГРА "ПРИДУМАЙ МЕМ" */
+        .meme-game { background: #2f3136; color: white; padding: 20px; border-radius: 10px; }
+        .meme-input { width: 100%; padding: 10px; margin: 10px 0; background: #40444b; border: 1px solid #202225; color: white; border-radius: 5px; }
+        .meme-submit { background: #5865f2; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 10px; }
+        .meme-result { margin-top: 20px; padding: 15px; background: #202225; border-radius: 5px; text-align: center; }
+        .meme-rating { font-size: 48px; font-weight: bold; margin: 10px 0; }
+        .rating-10 { color: #ffd700; }
+        .rating-8-9 { color: #00ff00; }
+        .rating-6-7 { color: #4ecdc4; }
+        .rating-4-5 { color: #ff9966; }
+        .rating-1-3 { color: #ff4444; }
+        .meme-comment { font-size: 18px; margin: 10px 0; }
+        .meme-examples { margin-top: 20px; font-size: 14px; color: #72767d; }
+        
+        /* ВИРУС */
+        #virus-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; color: red; font-family: 'Arial', sans-serif; }
+        .virus-text { font-size: 24px; margin: 10px; text-align: center; }
+        .virus-buttons { margin-top: 30px; }
+        .virus-btn { padding: 10px 20px; margin: 10px; background: #ff0000; color: white; border: none; cursor: pointer; font-size: 16px; }
+        .virus-btn:hover { background: #cc0000; }
+        
+        /* УВЕДОМЛЕНИЯ */
+        .notification { position: absolute; top: 20px; right: 20px; background: #ff4444; color: white; padding: 15px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.5); z-index: 10001; display: none; }
+        
+        /* ИКОНКА FREEROBUX */
+        .icon-freerobux { width: 80px; margin: 20px; color: white; text-align: center; cursor: pointer; display: inline-block; vertical-align: top; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        
+        /* ДОПОЛНИТЕЛЬНЫЕ ИКОНКИ */
+        #freerobux-icon { display: none; }
+        #antivirus-icon { display: none; }
+        #calculator-icon { display: inline-block; }
+        #meme-game-icon { display: inline-block; }
+        
+        /* МОДАЛЬНОЕ ОКНО НАСТРОЕК */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal { background: #2f3136; padding: 30px; border-radius: 10px; width: 400px; max-width: 90%; color: white; }
+        .modal h3 { margin-top: 0; }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-btn { flex: 1; padding: 10px; border: none; border-radius: 5px; cursor: pointer; }
+        .modal-btn-primary { background: #5865f2; color: white; }
+        .modal-btn-secondary { background: #4f545c; color: white; }
+
+        /* ========== НОВЫЕ СТИЛИ ДЛЯ STEAM ========== */
+        #steam-screen {
+            background: linear-gradient(135deg, #1b2838, #171a21);
+            display: none;
+            flex-direction: column;
+            position: relative;
+            color: white;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .steam-header {
+            background: #171a21;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #2a475e;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .steam-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #c6d4df;
+            margin-right: 30px;
+        }
+
+        .steam-nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        .steam-nav-item {
+            padding: 8px 16px;
+            background: transparent;
+            color: #c6d4df;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .steam-nav-item:hover {
+            background: #2a475e;
+            color: white;
+        }
+
+        .steam-nav-item.active {
+            background: #2a475e;
+            color: #66c0f4;
+            border-bottom: 2px solid #66c0f4;
+        }
+
+        .steam-user-info {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .steam-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #66c0f4;
+        }
+
+        .steam-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .steam-sidebar {
+            width: 250px;
+            background: rgba(23, 26, 33, 0.9);
+            padding: 20px;
+            border-right: 1px solid #2a475e;
+            overflow-y: auto;
+        }
+
+        .steam-main {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .steam-close {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #c0c0c0;
+            color: black;
+            width: 20px;
+            height: 20px;
+            border: 2px solid;
+            border-top-color: white;
+            border-left-color: white;
+            border-right-color: black;
+            border-bottom-color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 100;
+        }
+
+        .steam-close:active {
+            border-top-color: black;
+            border-left-color: black;
+            border-right-color: white;
+            border-bottom-color: white;
+        }
+
+        /* ИГРЫ В БИБЛИОТЕКЕ */
+        .steam-games-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .steam-game-card {
+            background: linear-gradient(135deg, #2a475e, #1b2838);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .steam-game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .game-cover {
+            width: 100%;
+            height: 100px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .game-status {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .status-installed {
+            background: #5c7e10;
+        }
+
+        .status-uninstalled {
+            background: #66c0f4;
+        }
+
+        .status-downloading {
+            background: #f5a623;
+        }
+
+        .game-info {
+            padding: 15px;
+        }
+
+        .game-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #c6d4df;
+        }
+
+        .game-genre {
+            font-size: 12px;
+            color: #66c0f4;
+            margin-bottom: 10px;
+        }
+
+        .game-playtime {
+            font-size: 11px;
+            color: #8f98a0;
+        }
+
+        .game-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .game-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+
+        .play-btn {
+            background: #5c7e10;
+            color: white;
+        }
+
+        .play-btn:hover {
+            background: #6a9313;
+        }
+
+        .install-btn {
+            background: #66c0f4;
+            color: white;
+        }
+
+        .install-btn:hover {
+            background: #4a9cd4;
+        }
+
+        /* ОКНО ЗАГРУЗКИ ИГРЫ */
+        .download-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .download-box {
+            background: #1b2838;
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            max-width: 90%;
+            border: 2px solid #66c0f4;
+        }
+
+        .download-title {
+            color: #66c0f4;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .download-progress {
+            width: 100%;
+            height: 20px;
+            background: #2a475e;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .download-progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #66c0f4, #4a9cd4);
+            transition: width 0.5s;
+            border-radius: 10px;
+        }
+
+        .download-details {
+            font-size: 14px;
+            color: #8f98a0;
+            margin-top: 10px;
+        }
+
+        /* ОКНО ИГРЫ */
+        .game-window {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 800px;
+            height: 600px;
+            background: black;
+            border: 2px solid #66c0f4;
+            display: none;
+            z-index: 1001;
+            flex-direction: column;
+        }
+
+        .game-header {
+            background: #1b2838;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #66c0f4;
+        }
+
+        .game-close-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .game-body {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* СТИЛИ ДЛЯ КОНКРЕТНЫХ ИГР */
+        .word-puzzle-container {
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .word-display {
+            font-size: 36px;
+            letter-spacing: 10px;
+            margin: 30px 0;
+            color: #66c0f4;
+            font-family: 'Courier New', monospace;
+        }
+
+        .word-input {
+            padding: 10px;
+            font-size: 18px;
+            width: 300px;
+            text-align: center;
+            background: #2a475e;
+            border: 2px solid #66c0f4;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .word-hint {
+            margin-top: 20px;
+            color: #8f98a0;
+            font-size: 14px;
+        }
+
+        .puzzle-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 30px);
+            grid-template-rows: repeat(10, 30px);
+            gap: 2px;
+            margin: 20px auto;
+            justify-content: center;
+        }
+
+        .puzzle-cell {
+            width: 30px;
+            height: 30px;
+            background: #2a475e;
+            border: 1px solid #66c0f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+        }
+
+        .puzzle-cell.found {
+            background: #5c7e10;
+        }
+
+        .puzzle-words {
+            margin-top: 20px;
+            color: #c6d4df;
+        }
+
+        .shooting-range {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(#1a472a, #0c1c1c);
+            overflow: hidden;
+        }
+
+        .target {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #ff4444, #cc0000);
+            border-radius: 50%;
+            cursor: crosshair;
+            box-shadow: 0 0 10px red;
+        }
+
+        .target.hit {
+            animation: explode 0.5s;
+        }
+
+        @keyframes explode {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        .score-display {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-size: 24px;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .timer-display {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-size: 24px;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .building-game {
+            background: linear-gradient(#87CEEB, #E0F6FF);
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .block {
+            position: absolute;
+            background: #8B4513;
+            border: 2px solid #654321;
+            cursor: pointer;
+        }
+
+        .block:hover {
+            background: #A0522D;
+        }
+
+        .block-menu {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(27, 40, 56, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .block-type {
+            width: 50px;
+            height: 50px;
+            background: #8B4513;
+            border: 2px solid white;
+            cursor: pointer;
+        }
+
+        .block-type:hover {
+            background: #A0522D;
+        }
+
+        .survival-game {
+            background: linear-gradient(#228B22, #006400);
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #FFD700;
+            border-radius: 50%;
+            border: 2px solid #FF8C00;
+        }
+
+        .zombie {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #228B22;
+            border-radius: 50%;
+        }
+
+        .health-bar {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 200px;
+            height: 20px;
+            background: #333;
+            border: 2px solid white;
+        }
+
+        .health-fill {
+            width: 100%;
+            height: 100%;
+            background: #ff4444;
+            transition: width 0.3s;
+        }
+
+        /* АЧИВКИ STEAM */
+        .steam-achievements {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .achievement-card {
+            background: rgba(42, 71, 94, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .achievement-icon {
+            width: 64px;
+            height: 64px;
+            background: #66c0f4;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .achievement-locked {
+            background: #2a475e;
+            color: #8f98a0;
+        }
+
+        .achievement-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .achievement-desc {
+            font-size: 12px;
+            color: #8f98a0;
+        }
+
+        /* СТИЛИ ДЛЯ КАТЕГОРИЙ STEAM */
+        .steam-category {
+            padding: 10px 15px;
+            margin: 5px 0;
+            background: transparent;
+            color: #c6d4df;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .steam-category:hover {
+            background: rgba(102, 192, 244, 0.2);
+        }
+        .steam-category.active {
+            background: rgba(102, 192, 244, 0.4);
+            color: #66c0f4;
+            border-left: 3px solid #66c0f4;
+        }
+    </style>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body>
+
+<div id="monitor">
+    <div class="scanlines"></div>
+
+    <!-- 1. LOGIN SCREEN -->
+    <div id="login-screen" class="screen" style="display:flex;">
+        <div id="login-box">
+            <h3>WINDOWS LOGIN</h3>
+            <input type="password" id="pass-input" placeholder="Password" onkeydown="if(event.key==='Enter') login()">
+            <button onclick="login()">-></button>
+        </div>
+        <div class="sticker" onclick="alert('1234')">1234</div>
+    </div>
+
+    <!-- 2. DESKTOP -->
+    <div id="desktop" class="screen">
+        <div class="icon" onclick="openGame('gta')"><div class="icon-img" style="background:purple;"></div>GTA V</div>
+        <div class="icon" id="roblox-icon" onclick="openGame('roblox')" style="display:none;"><div class="icon-img" style="background:red;"></div>ROBLOX</div>
+        <div class="icon" onclick="openChat()"><div class="icon-img" style="background:blue;"></div>Messenger</div>
+        <div class="icon" onclick="openDiscord()"><div class="icon-img" style="background:#5865f2;"></div>Discord</div>
+        <div class="icon" onclick="openBrowser()"><div class="icon-img" style="background:green;"></div>Browser</div>
+        <div class="icon" onclick="openSettings()"><div class="icon-img" style="background:gray;"></div>Settings</div>
+        <div class="icon" onclick="openCalculator()"><div class="icon-img" style="background:#333;"></div>Calculator</div>
+        <div class="icon" onclick="openMemeGame()"><div class="icon-img" style="background:linear-gradient(45deg, #ff6b6b, #4ecdc4);"></div>Meme Game</div>
+        
+        <!-- Иконка Steam -->
+        <div class="icon" onclick="openSteam()">
+            <div class="icon-img" style="background: linear-gradient(135deg, #1b2838, #171a21);"></div>
+            Steam
+        </div>
+        
+        <!-- Иконка FreeRobux появится после скачивания -->
+        <div class="icon-freerobux" id="freerobux-icon" onclick="openFreeRobux()" style="display:none;">
+            <div class="icon-img" style="background:linear-gradient(45deg, #ff9900, #ff3300);"></div>
+            FreeRobux.exe
+        </div>
+        
+        <!-- Иконка Антивируса появится после решения вируса -->
+        <div class="icon" id="antivirus-icon" onclick="openAntivirus()" style="display:none;">
+            <div class="icon-img" style="background:#00cc00;"></div>AntiVirus Pro
+        </div>
+    </div>
+
+    <!-- ОКНО GTA -->
+    <div id="win-gta" class="window" style="top:50px; left:100px; width:600px; height:450px;">
+        <div class="title-bar">
+            <span>GTA V</span>
+            <div class="title-bar-close" onclick="closeWin('gta')">✕</div>
+        </div>
+        <div class="win-body" style="background:#222;">
+            <div id="game-canvas"><div style="color:white; padding:10px;">KILLS: <span id="kills">0</span>/3</div></div>
+        </div>
+    </div>
+
+    <!-- ОКНО ROBLOX -->
+    <div id="win-roblox" class="window" style="top:60px; left:120px; width:600px; height:450px;">
+        <div class="title-bar" style="background:#cc0000;">
+            <span>ROBLOX</span>
+            <div class="title-bar-close" onclick="closeWin('roblox')">✕</div>
+        </div>
+        <div class="win-body" style="background:#333;">
+            <div id="roblox-canvas" onclick="robloxClick()">
+                <div id="gugushka-char" class="blox-char" style="top:150px; left:200px; background:lime; display:none;"></div>
+                <div style="color:white; padding:10px;">Жми, чтобы прыгать!</div>
+            </div>
+            <div style="background:rgba(0,0,0,0.5); color:white; padding:5px; height:50px; overflow-y:auto;" id="roblox-chat">[System]: Welcome!</div>
+        </div>
+    </div>
+
+    <!-- ОКНО CHAT -->
+    <div id="win-chat" class="window" style="top:100px; left:300px; width:450px; height:400px;">
+        <div class="title-bar">
+            <span>Messenger</span>
+            <div class="title-bar-close" onclick="closeWin('chat')">✕</div>
+        </div>
+        <div class="win-body">
+            <div id="chat-history"></div>
+            <div id="typing-indicator"></div>
+            <div style="margin-top:5px; display:flex;">
+                <input type="text" id="chat-input" style="flex-grow:1;" placeholder="Пиши здесь..." onkeydown="if(event.key==='Enter') sendBtn()">
+                <button onclick="sendBtn()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. DISCORD -->
+    <div id="discord-screen" class="screen">
+        <div class="discord-close" onclick="closeDiscord()">✕</div>
+        <div class="discord-sidebar">
+            <div style="display: flex; align-items: center; margin-bottom: 20px; cursor: pointer;" onclick="openDiscordSettings()">
+                <div class="discord-avatar" id="user-avatar-preview" style="background: #5865f2; display: flex; align-items: center; justify-content: center; font-size: 20px;">U</div>
+                <div style="margin-left: 10px;">
+                    <div id="user-name-preview" style="font-weight: bold;">User</div>
+                    <div style="font-size: 12px; color: #72767d;">Настройки</div>
+                </div>
+            </div>
+            
+            <h3 style="color:white; margin-top:0;">Сервера</h3>
+            <div class="channel active" onclick="switchChannel('general')"># general</div>
+            <div class="channel" onclick="switchChannel('misha')">🔒 misha-help</div>
+            <div class="channel" onclick="switchChannel('gugu')">🛡️ gugushka-advice</div>
+            <div class="channel" onclick="switchChannel('police')">🚔 police-info</div>
+            <div class="channel" onclick="switchChannel('psycho')">🧠 psycho-help</div>
+            
+            <!-- TRUSIKI SHOW СЕРВЕР -->
+            <div class="trusiki-banner" style="margin-top: 30px;">
+                🎭 Trusiki Show
+            </div>
+            <div class="channel" onclick="switchChannel('trusiki')" style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4);"># general-live</div>
+            <div class="channel" onclick="switchChannel('trusiki-help')">🆘 help-center</div>
+            <div class="channel" onclick="switchChannel('trusiki-memes')">😂 memes</div>
+            
+            <div style="margin-top: 30px; color: #72767d; font-size: 12px;">
+                <div style="margin-bottom: 10px;">Онлайн сервер "Помощь":</div>
+                <div class="online-user">
+                    <div class="user-status status-online"></div>
+                    <span>Gugushka</span>
+                </div>
+                <div class="online-user">
+                    <div class="user-status status-online"></div>
+                    <span>Police_Support</span>
+                </div>
+                <div class="online-user">
+                    <div class="user-status status-idle"></div>
+                    <span>Misha25k</span>
+                </div>
+                <div class="online-user">
+                    <div class="user-status status-online"></div>
+                    <span>Psycho_Doctor</span>
+                </div>
+                
+                <div style="margin-top: 20px; margin-bottom: 10px;">Онлайн Trusiki Show:</div>
+                <div id="trusiki-online-list">
+                    <!-- Список реальных пользователей будет здесь -->
+                </div>
+            </div>
+        </div>
+        <div class="discord-main">
+            <div class="discord-chat" id="discord-chat"></div>
+            <div class="discord-input">
+                <input type="text" id="discord-input" placeholder="Напиши сообщение..." onkeydown="if(event.key==='Enter') sendDiscord()">
+                <button onclick="sendDiscord()">Отправить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. BROWSER -->
+    <div id="browser-screen" class="screen">
+        <div class="browser-close" onclick="closeBrowser()">✕</div>
+        <div class="browser-bar">
+            <button onclick="goBack()">←</button>
+            <button onclick="goForward()">→</button>
+            <button onclick="refreshPage()">↻</button>
+            <input type="text" class="browser-url" id="browser-url" value="https://www.google.com" onkeydown="if(event.key==='Enter') navigateTo()">
+            <button onclick="navigateTo()">Go</button>
+        </div>
+        <div class="browser-tabs">
+            <div class="browser-tab active" onclick="switchTab('home')">Главная</div>
+            <div class="browser-tab" onclick="switchTab('freerobux')">FreeRobux.com</div>
+            <div class="browser-tab" onclick="switchTab('youtube')">YouTube</div>
+            <div class="browser-tab" onclick="switchTab('antivirus')">Антивирус</div>
+        </div>
+        <div class="browser-content" id="browser-content"></div>
+    </div>
+
+    <!-- 8. НАСТРОЙКИ СИСТЕМЫ -->
+    <div id="settings-screen" class="screen" style="background:#008080; display:none; flex-direction:column; align-items:center; justify-content:center;">
+        <div style="background:#c0c0c0; padding:30px; border:2px solid white; max-width:600px; width:90%;">
+            <h2 style="text-align:center; margin-top:0;">⚙️ Системные настройки</h2>
+            
+            <div class="settings-option">
+                <div class="settings-label">Цвет обоев рабочего стола:</div>
+                <div class="color-picker">
+                    <div class="color-option selected" style="background:#008080;" onclick="selectWallpaper('#008080')"></div>
+                    <div class="color-option" style="background:#000080;" onclick="selectWallpaper('#000080')"></div>
+                    <div class="color-option" style="background:#800000;" onclick="selectWallpaper('#800000')"></div>
+                    <div class="color-option" style="background:#008000;" onclick="selectWallpaper('#008000')"></div>
+                    <div class="color-option" style="background:#800080;" onclick="selectWallpaper('#800080')"></div>
+                    <div class="color-option" style="background:#000000;" onclick="selectWallpaper('#000000')"></div>
+                </div>
+            </div>
+            
+            <div class="settings-option">
+                <div class="settings-label">Сложность игры:</div>
+                <select id="difficulty-select" style="width:100%; padding:8px;">
+                    <option value="easy">🟢 Легкая</option>
+                    <option value="normal" selected>🟡 Нормальная</option>
+                    <option value="hard">🔴 Сложная</option>
+                    <option value="nightmare">💀 Кошмар</option>
+                </select>
+            </div>
+            
+            <div class="settings-option">
+                <div class="settings-label">Тема компьютера:</div>
+                <select id="theme-select" style="width:100%; padding:8px;">
+                    <option value="classic" selected>🖥️ Классическая (Windows 95)</option>
+                    <option value="dark">🌙 Темная</option>
+                    <option value="matrix">📀 Матрица</option>
+                    <option value="retro">👾 Ретро</option>
+                </select>
+            </div>
+            
+            <div class="settings-option">
+                <div class="settings-label">Звук калькулятора:</div>
+                <label style="display:block;">
+                    <input type="checkbox" id="calc-sound-toggle" checked>
+                    Включить музыку при открытии калькулятора
+                </label>
+            </div>
+            
+            <div class="settings-option">
+                <div class="settings-label">Звук вируса:</div>
+                <label style="display:block;">
+                    <input type="checkbox" id="virus-sound-toggle" checked>
+                    Включить музыку при вирусе
+                </label>
+            </div>
+            
+            <div style="margin-top:30px; display:flex; gap:10px;">
+                <button onclick="saveSettings()" style="flex:1; padding:10px; background:#000080; color:white; border:none; cursor:pointer;">💾 Сохранить</button>
+                <button onclick="closeSettings()" style="flex:1; padding:10px; background:gray; color:white; border:none; cursor:pointer;">❌ Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 9. КАЛЬКУЛЯТОР -->
+    <div id="calculator-screen" class="window" style="top:100px; left:150px; width:300px; height:400px; display:none;">
+        <div class="title-bar">
+            <span>Calculator</span>
+            <div class="title-bar-close" onclick="closeCalculator()">✕</div>
+        </div>
+        <div class="win-body">
+            <div class="calculator">
+                <div class="calc-display" id="calc-display">0</div>
+                <div class="calc-buttons">
+                    <div class="calc-btn clear" onclick="clearCalc()">C</div>
+                    <div class="calc-btn" onclick="calcInput('(')">(</div>
+                    <div class="calc-btn" onclick="calcInput(')')">)</div>
+                    <div class="calc-btn operator" onclick="calcInput('/')">/</div>
+                    
+                    <div class="calc-btn" onclick="calcInput('7')">7</div>
+                    <div class="calc-btn" onclick="calcInput('8')">8</div>
+                    <div class="calc-btn" onclick="calcInput('9')">9</div>
+                    <div class="calc-btn operator" onclick="calcInput('*')">×</div>
+                    
+                    <div class="calc-btn" onclick="calcInput('4')">4</div>
+                    <div class="calc-btn" onclick="calcInput('5')">5</div>
+                    <div class="calc-btn" onclick="calcInput('6')">6</div>
+                    <div class="calc-btn operator" onclick="calcInput('-')">-</div>
+                    
+                    <div class="calc-btn" onclick="calcInput('1')">1</div>
+                    <div class="calc-btn" onclick="calcInput('2')">2</div>
+                    <div class="calc-btn" onclick="calcInput('3')">3</div>
+                    <div class="calc-btn operator" onclick="calcInput('+')">+</div>
+                    
+                    <div class="calc-btn" onclick="calcInput('0')">0</div>
+                    <div class="calc-btn" onclick="calcInput('.')">.</div>
+                    <div class="calc-btn equals" onclick="calculate()">=</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 10. ИГРА "ПРИДУМАЙ МЕМ" -->
+    <div id="meme-game-screen" class="window" style="top:50px; left:100px; width:500px; height:600px; display:none;">
+        <div class="title-bar">
+            <span>🎮 Meme Generator for Trusiki Show</span>
+            <div class="title-bar-close" onclick="closeMemeGame()">✕</div>
+        </div>
+        <div class="win-body">
+            <div class="meme-game">
+                <h2>🎭 Придумай мем для Trusiki Show!</h2>
+                <p>Напишите идею для мема (шутку, ситуацию, иронию). ИИ оценит ваш мем от 1 до 10!</p>
+                
+                <textarea class="meme-input" id="meme-input" placeholder="Например: Когда Миша25к видит красную футболку... 
+Или: Как антивирус пытается удалить FreeRobux.exe...
+Или: Гугушка пытается объяснить как забаррикадировать дверь..." rows="5"></textarea>
+                
+                <button class="meme-submit" onclick="rateMeme()">🎯 Оценить мем!</button>
+                
+                <div class="meme-examples">
+                    <h4>Примеры успешных мемов:</h4>
+                    <ul>
+                        <li>"Когда вирус требует Bitcoin, а у тебя только Robux"</li>
+                        <li>"Миша25к в Discord: 'Привет, я вижу твою футболку'"</li>
+                        <li>"Гугушка пытается взломать маньяка через Roblox"</li>
+                    </ul>
+                </div>
+                
+                <div id="meme-result" class="meme-result" style="display:none;">
+                    <h3>Результат оценки:</h3>
+                    <div class="meme-rating" id="meme-rating">0/10</div>
+                    <div class="meme-comment" id="meme-comment">Ожидаем оценку...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. ROOM SCENE -->
+    <div id="room-scene" class="screen">
+        <h2 id="room-msg" style="color:red; text-align:center;">БАРРИКАДИРУЙ ОКНА И ДВЕРИ!</h2>
+        <div id="win-obj" onclick="barricade('win')">
+            <div id="face"><div style="position:absolute; top:30px; left:20px; width:10px; height:10px; background:black;"></div><div style="position:absolute; top:30px; right:20px; width:10px; height:10px; background:black;"></div></div>
+        </div>
+        <div id="door-obj" onclick="barricade('door')"></div>
+        <button id="hide-btn" onclick="startHiding()" style="display:none; position:absolute; bottom:50px; left:40%; padding:10px; background:red; color:white;">ПРЯТАТЬСЯ</button>
+    </div>
+
+    <!-- 4. HIDING MINI-GAME -->
+    <div id="hiding-spot" class="screen">
+        <h1 style="color:#fff;">УСПОКОЙ СЕРДЦЕБИЕНИЕ!</h1>
+        <p>Жми [ПРОБЕЛ], когда курсор в зеленой зоне.</p>
+        
+        <div id="skill-check-container">
+            <div id="safe-zone"></div>
+            <div id="marker"></div>
+        </div>
+
+        <p>УРОВЕНЬ ПАНИКИ:</p>
+        <div id="panic-bar-container">
+            <div id="panic-fill"></div>
+        </div>
+
+        <div id="survival-timer" style="margin-top:20px; font-size: 24px;">15</div>
+    </div>
+
+    <!-- 5. TIME SKIP -->
+    <div id="time-skip" class="screen">
+        <h1 id="time-text">ДЕНЬ 1</h1>
+    </div>
+
+    <!-- 11. STEAM ЭКРАН -->
+    <div id="steam-screen" class="screen">
+        <div class="steam-close" onclick="closeSteam()">✕</div>
+        
+        <div class="steam-header">
+            <div class="steam-logo">STEAM</div>
+            <div class="steam-nav">
+                <button class="steam-nav-item active" onclick="switchSteamTab('library')">Библиотека</button>
+                <button class="steam-nav-item" onclick="switchSteamTab('store')">Магазин</button>
+                <button class="steam-nav-item" onclick="switchSteamTab('achievements')">Достижения</button>
+                <button class="steam-nav-item" onclick="switchSteamTab('friends')">Друзья</button>
+            </div>
+            <div class="steam-user-info">
+                <div class="steam-avatar"></div>
+                <span id="steam-username">Player_${Math.floor(Math.random()*10000)}</span>
+            </div>
+        </div>
+        
+        <div class="steam-content">
+            <div class="steam-sidebar">
+                <h3 style="color: #66c0f4; margin-bottom: 15px;">КАТЕГОРИИ</h3>
+                <div class="steam-category active" onclick="filterGames('all')">Все игры</div>
+                <div class="steam-category" onclick="filterGames('installed')">Установленные</div>
+                <div class="steam-category" onclick="filterGames('action')">Экшен</div>
+                <div class="steam-category" onclick="filterGames('puzzle')">Головоломки</div>
+                <div class="steam-category" onclick="filterGames('survival')">Выживание</div>
+                <div class="steam-category" onclick="filterGames('strategy')">Стратегии</div>
+                <div class="steam-category" onclick="filterGames('horror')">Хоррор</div>
+                
+                <div style="margin-top: 30px;">
+                    <h3 style="color: #66c0f4; margin-bottom: 15px;">ИНФОРМАЦИЯ</h3>
+                    <div style="font-size: 12px; color: #8f98a0;">
+                        <div>Игр в библиотеке: <span id="game-count">10</span></div>
+                        <div>Время в играх: <span id="playtime-total">42ч 15м</span></div>
+                        <div>Достижений: <span id="achievement-count">0/50</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="steam-main">
+                <div id="steam-library" class="steam-tab">
+                    <h2 style="color: #c6d4df; margin-bottom: 20px;">МОЯ БИБЛИОТЕКА</h2>
+                    <div class="steam-games-list" id="games-list">
+                        <!-- Игры будут загружены через JavaScript -->
+                    </div>
+                </div>
+                
+                <div id="steam-store" class="steam-tab" style="display: none;">
+                    <h2 style="color: #c6d4df; margin-bottom: 20px;">МАГАЗИН</h2>
+                    <div class="steam-games-list" id="store-games">
+                        <!-- Игры в магазине будут загружены через JavaScript -->
+                    </div>
+                </div>
+                
+                <div id="steam-achievements" class="steam-tab" style="display: none;">
+                    <h2 style="color: #c6d4df; margin-bottom: 20px;">МОИ ДОСТИЖЕНИЯ</h2>
+                    <div class="steam-achievements" id="achievements-list">
+                        <!-- Достижения будут загружены через JavaScript -->
+                    </div>
+                </div>
+                
+                <div id="steam-friends" class="steam-tab" style="display: none;">
+                    <h2 style="color: #c6d4df; margin-bottom: 20px;">ДРУЗЬЯ (0/100)</h2>
+                    <div style="background: rgba(42, 71, 94, 0.5); padding: 20px; border-radius: 8px;">
+                        <p style="color: #8f98a0; text-align: center;">
+                            Подключитесь к сети, чтобы увидеть друзей онлайн
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВИРУСНЫЙ ЭКРАН -->
+    <div id="virus-screen" class="screen">
+        <div class="virus-text" id="virus-text-1">ВНИМАНИЕ! Обнаружена критическая ошибка системы!</div>
+        <div class="virus-text" id="virus-text-2" style="display:none;">Ваш компьютер заблокирован!</div>
+        <div class="virus-text" id="virus-text-3" style="display:none;">Все файлы будут удалены через 60 секунд!</div>
+        <div class="virus-text" id="virus-text-4" style="display:none;">Для разблокировки переведите $500 на Bitcoin кошелек</div>
+        <div class="virus-text" id="virus-text-5" style="display:none;">Или решите головоломку...</div>
+        
+        <div id="virus-puzzle" style="display:none; margin-top: 30px; color: lime;">
+            <div>Введите код: <span id="code-display">_ _ _ _</span></div>
+            <div style="margin-top: 20px;">
+                <button class="virus-btn" onclick="addCodeDigit(1)">1</button>
+                <button class="virus-btn" onclick="addCodeDigit(2)">2</button>
+                <button class="virus-btn" onclick="addCodeDigit(3)">3</button>
+                <button class="virus-btn" onclick="addCodeDigit(4)">4</button>
+            </div>
+            <button class="virus-btn" onclick="checkVirusCode()" style="margin-top: 20px; background: #00aa00;">Проверить код</button>
+        </div>
+        
+        <div class="virus-buttons">
+            <button class="virus-btn" onclick="tryFixVirus()" id="fix-btn">Попытаться исправить</button>
+            <button class="virus-btn" onclick="openBrowserFromVirus()" id="browser-btn" style="display:none;">Открыть браузер для решения</button>
+            <button class="virus-btn" onclick="completeVirus()" id="complete-btn" style="display:none; background:#00aa00;">Завершить очистку</button>
+        </div>
+        
+        <div id="virus-timer" style="margin-top: 30px; font-size: 48px; color: red;">60</div>
+    </div>
+
+    <!-- УВЕДОМЛЕНИЕ О ВИРУСЕ -->
+    <div class="notification" id="virus-notification">
+        <strong>⚠ ОБНАРУЖЕН ВИРУС!</strong><br>
+        Система заражена трояном "RobuxStealer"<br>
+        <button onclick="showVirusScreen()" style="margin-top:5px; padding:5px;">Показать детали</button>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО НАСТРОЕК DISCORD -->
+    <div class="modal-overlay" id="discord-settings-modal">
+        <div class="modal">
+            <h3>⚙️ Настройки Discord</h3>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px;">Ваш ник:</label>
+                <input type="text" id="discord-username" placeholder="Введите ваш ник" maxlength="20">
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px;">Выберите аватарку:</label>
+                <div class="avatar-select">
+                    <div class="avatar-option selected" style="background: #5865f2;" onclick="selectAvatar('#5865f2', '👤')" id="avatar-1"></div>
+                    <div class="avatar-option" style="background: #ff6b6b;" onclick="selectAvatar('#ff6b6b', '😎')" id="avatar-2"></div>
+                    <div class="avatar-option" style="background: #4ecdc4;" onclick="selectAvatar('#4ecdc4', '🦊')" id="avatar-3"></div>
+                    <div class="avatar-option" style="background: #ffd166;" onclick="selectAvatar('#ffd166', '🐱')" id="avatar-4"></div>
+                    <div class="avatar-option" style="background: #06d6a0;" onclick="selectAvatar('#06d6a0', '🐶')" id="avatar-5"></div>
+                    <div class="avatar-option" style="background: #ef476f;" onclick="selectAvatar('#ef476f', '🦁')" id="avatar-6"></div>
+                </div>
+                <div style="margin-top: 10px; font-size: 12px; color: #72767d;">
+                    Выбрано: <span id="selected-avatar-text">👤</span>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px;">Статус:</label>
+                <select id="discord-status">
+                    <option value="online">🟢 Онлайн</option>
+                    <option value="idle">🟡 Не активен</option>
+                    <option value="dnd">⛔ Не беспокоить</option>
+                    <option value="offline">⚫ Не в сети</option>
+                </select>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-secondary" onclick="closeDiscordSettings()">Отмена</button>
+                <button class="modal-btn modal-btn-primary" onclick="saveDiscordSettings()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ОКНО ЗАГРУЗКИ ИГРЫ -->
+    <div class="download-overlay" id="download-overlay">
+        <div class="download-box">
+            <h3 class="download-title" id="download-game-title">Установка игры</h3>
+            <div class="download-progress">
+                <div class="download-progress-bar" id="download-progress-bar"></div>
+            </div>
+            <div class="download-details">
+                <div id="download-status">Подготовка...</div>
+                <div id="download-speed">Скорость: -- MB/s</div>
+                <div id="download-time">Осталось: --</div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button onclick="cancelDownload()" style="padding: 10px 20px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    Отменить
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ОКНО ИГРЫ -->
+    <div class="game-window" id="game-window">
+        <div class="game-header">
+            <span id="game-window-title">Игра</span>
+            <button class="game-close-btn" onclick="closeGame()">✕</button>
+        </div>
+        <div class="game-body" id="game-container">
+            <!-- Контент игры будет загружен сюда -->
+        </div>
+    </div>
+
+</div>
+
+<!-- АУДИО ДЛЯ КАЛЬКУЛЯТОРА -->
+<audio id="calculator-music" loop>
+    <source src="https://rus.hitmotop.com/song/80457773" type="audio/mpeg">
+</audio>
+
+<!-- АУДИО ДЛЯ ВИРУСА -->
+<audio id="virus-music" loop>
+    <source src="https://rus.hitmotop.com/song/74285188" type="audio/mpeg">
+</audio>
+
+<script>
+    // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+    let phase = 0; // 0=Intro, 1=RobloxArc, 2=Finale
+    let kills = 0;
+    let planksW=0, planksD=0;
+    let storyStep = 0;
+    let isTransitioning = false;
+    let currentDiscordChannel = 'general';
+    let hasVirus = false;
+    let virusTimer = 60;
+    let virusCode = [];
+    let correctCode = [4, 2, 3, 1];
+    let virusSolved = false;
+    
+    // НАСТРОЙКИ СИСТЕМЫ
+    let systemSettings = {
+        wallpaper: '#008080',
+        difficulty: 'normal',
+        theme: 'classic',
+        calcSound: true,
+        virusSound: true
+    };
+    
+    // КАЛЬКУЛЯТОР
+    let calcExpression = '';
+    let calculatorMusic = document.getElementById('calculator-music');
+    let virusMusic = document.getElementById('virus-music');
+    
+    // НАСТРОЙКИ ПОЛЬЗОВАТЕЛЯ DISCORD
+    let discordUser = {
+        username: 'User_' + Math.floor(Math.random() * 1000),
+        avatarColor: '#5865f2',
+        avatarEmoji: '👤',
+        status: 'online',
+        userId: 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+    };
+    
+    // ВЫБРАННАЯ АВАТАРКА
+    let selectedAvatar = {
+        color: '#5865f2',
+        emoji: '👤'
+    };
+    
+    // STEAM ПЕРЕМЕННЫЕ
+    let currentSteamTab = 'library';
+    let currentGameFilter = 'all';
+    let downloadingGame = null;
+    let downloadInterval = null;
+    let currentGame = null;
+    
+    // МАССИВ ИГР В STEAM
+    const steamGames = [
+        {
+            id: 1,
+            title: "Cyber Detective",
+            genre: "Головоломка",
+            description: "Раскройте киберпреступление, анализируя цифровые улики",
+            installed: true,
+            playtime: 125,
+            cover: "cyber_bg",
+            actions: ["play"],
+            type: "puzzle",
+            storePrice: 799,
+            achievements: 10
+        },
+        {
+            id: 2,
+            title: "Zombie Survival Pro",
+            genre: "Выживание/Экшен",
+            description: "Выживайте в мире, охваченном зомби-апокалипсисом",
+            installed: false,
+            playtime: 0,
+            cover: "zombie_bg",
+            actions: ["install"],
+            type: "survival",
+            storePrice: 1299,
+            achievements: 15
+        },
+        {
+            id: 3,
+            title: "Word Hunter",
+            genre: "Головоломка/Слова",
+            description: "Найдите все слова в буквенной сетке",
+            installed: true,
+            playtime: 45,
+            cover: "word_bg",
+            actions: ["play"],
+            type: "puzzle",
+            storePrice: 399,
+            achievements: 8
+        },
+        {
+            id: 4,
+            title: "Tower Defense 3000",
+            genre: "Стратегия/Защита",
+            description: "Стройте башни и защищайте свою базу от волн врагов",
+            installed: false,
+            playtime: 0,
+            cover: "tower_bg",
+            actions: ["install"],
+            type: "strategy",
+            storePrice: 899,
+            achievements: 12
+        },
+        {
+            id: 5,
+            title: "Shooting Range Sim",
+            genre: "Экшен/Симулятор",
+            description: "Тренируйте точность в тире с разными видами оружия",
+            installed: true,
+            playtime: 87,
+            cover: "shooting_bg",
+            actions: ["play"],
+            type: "action",
+            storePrice: 499,
+            achievements: 10
+        },
+        {
+            id: 6,
+            title: "Block Architect",
+            genre: "Строительство/Песочница",
+            description: "Стройте невероятные структуры из блоков",
+            installed: false,
+            playtime: 0,
+            cover: "block_bg",
+            actions: ["install"],
+            type: "strategy",
+            storePrice: 599,
+            achievements: 20
+        },
+        {
+            id: 7,
+            title: "Horror Mansion",
+            genre: "Хоррор/Приключение",
+            description: "Выживите в заброшенном особняке с призраками",
+            installed: true,
+            playtime: 63,
+            cover: "horror_bg",
+            actions: ["play"],
+            type: "horror",
+            storePrice: 999,
+            achievements: 12
+        },
+        {
+            id: 8,
+            title: "Code Breaker",
+            genre: "Головоломка/Логика",
+            description: "Взламывайте коды и решайте криптографические задачи",
+            installed: false,
+            playtime: 0,
+            cover: "code_bg",
+            actions: ["install"],
+            type: "puzzle",
+            storePrice: 449,
+            achievements: 10
+        },
+        {
+            id: 9,
+            title: "Space Engineers",
+            genre: "Строительство/Космос",
+            description: "Стройте космические корабли и станции",
+            installed: false,
+            playtime: 0,
+            cover: "space_bg",
+            actions: ["install"],
+            type: "strategy",
+            storePrice: 1499,
+            achievements: 25
+        },
+        {
+            id: 10,
+            title: "Memory Matrix",
+            genre: "Головоломка/Память",
+            description: "Запоминайте и повторяйте сложные последовательности",
+            installed: true,
+            playtime: 32,
+            cover: "memory_bg",
+            actions: ["play"],
+            type: "puzzle",
+            storePrice: 299,
+            achievements: 6
+        },
+        {
+            id: 11,
+            title: "GTA V",
+            genre: "Экшен/Открытый мир",
+            description: "Уже установлена на рабочем столе",
+            installed: true,
+            playtime: 420,
+            cover: "gta_bg",
+            actions: ["play_external"],
+            type: "action",
+            storePrice: 1999,
+            achievements: 50
+        },
+        {
+            id: 12,
+            title: "ROBLOX",
+            genre: "Песочница/Мультиплеер",
+            description: "Уже установлена на рабочем столе",
+            installed: true,
+            playtime: 256,
+            cover: "roblox_bg",
+            actions: ["play_external"],
+            type: "action",
+            storePrice: 0,
+            achievements: 30
+        }
+    ];
+
+    // ДОСТИЖЕНИЯ STEAM
+    const steamAchievements = [
+        { id: 1, title: "Первый шаг", description: "Запустите первую игру в Steam", unlocked: true, icon: "🎮" },
+        { id: 2, title: "Мастер слов", description: "Найдите 50 слов в Word Hunter", unlocked: false, icon: "🔤" },
+        { id: 3, title: "Снайпер", description: "Попадите 100 раз подряд в Shooting Range", unlocked: false, icon: "🎯" },
+        { id: 4, title: "Архитектор", description: "Постройте структуру из 1000 блоков", unlocked: false, icon: "🏗️" },
+        { id: 5, title: "Выживший", description: "Проживите 30 дней в Zombie Survival", unlocked: false, icon: "🧟" },
+        { id: 6, title: "Детектив", description: "Раскройте все дела в Cyber Detective", unlocked: false, icon: "🕵️" },
+        { id: 7, title: "Кодер", description: "Взломайте 10 сложных кодов", unlocked: false, icon: "💻" },
+        { id: 8, title: "Защитник", description: "Пройдите 50 волн в Tower Defense", unlocked: false, icon: "🛡️" },
+        { id: 9, title: "Космонавт", description: "Постройте космическую станцию", unlocked: false, icon: "🚀" },
+        { id: 10, title: "Память", description: "Запомните последовательность из 20 шагов", unlocked: false, icon: "🧠" }
+    ];
+
+    // ========== ЛОГИН И ЗАГРУЗКА ==========
+    function login() {
+        if(document.getElementById('pass-input').value==="1234"){
+            document.getElementById('login-screen').style.display='none';
+            document.getElementById('desktop').style.display='block';
+            
+            // Загружаем настройки
+            loadSettings();
+            
+            if(phase===0) alert("Запусти GTA V.");
+            if(phase===1) {
+                 alert("Запусти ROBLOX (Красная иконка).");
+                 document.getElementById('roblox-icon').style.display='inline-block';
+            }
+            if(phase===2) {
+                alert("Ты вернулся с продуктами... Напиши что-нибудь.");
+                openChat();
+                setTimeout(()=>finalMisha(), 2000);
+            }
+            
+            // Проверяем вирус
+            if(hasVirus && !virusSolved) {
+                setTimeout(() => {
+                    document.getElementById('virus-notification').style.display = 'block';
+                    if (systemSettings.virusSound) {
+                        virusMusic.play().catch(e => console.log("Автовоспроизведение заблокировано"));
+                    }
+                }, 2000);
+            }
+            
+            // Загружаем настройки Discord
+            loadDiscordSettings();
+        } else alert("1234");
+    }
+    
+    // ========== НАСТРОЙКИ СИСТЕМЫ ==========
+    function openSettings() {
+        document.getElementById('desktop').style.display = 'none';
+        document.getElementById('settings-screen').style.display = 'flex';
+        
+        // Загружаем текущие настройки в форму
+        document.getElementById('difficulty-select').value = systemSettings.difficulty;
+        document.getElementById('theme-select').value = systemSettings.theme;
+        document.getElementById('calc-sound-toggle').checked = systemSettings.calcSound;
+        document.getElementById('virus-sound-toggle').checked = systemSettings.virusSound;
+        
+        // Выделяем текущий цвет обоев
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.classList.remove('selected');
+            if (option.style.backgroundColor === systemSettings.wallpaper) {
+                option.classList.add('selected');
+            }
+        });
+    }
+    
+    function closeSettings() {
+        document.getElementById('settings-screen').style.display = 'none';
+        document.getElementById('desktop').style.display = 'block';
+    }
+    
+    function selectWallpaper(color) {
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+        event.target.classList.add('selected');
+    }
+    
+    function saveSettings() {
+        // Сохраняем настройки
+        const selectedWallpaper = document.querySelector('.color-option.selected').style.backgroundColor;
+        systemSettings.wallpaper = selectedWallpaper;
+        systemSettings.difficulty = document.getElementById('difficulty-select').value;
+        systemSettings.theme = document.getElementById('theme-select').value;
+        systemSettings.calcSound = document.getElementById('calc-sound-toggle').checked;
+        systemSettings.virusSound = document.getElementById('virus-sound-toggle').checked;
+        
+        // Применяем настройки
+        applySettings();
+        
+        // Сохраняем в localStorage
+        localStorage.setItem('systemSettings', JSON.stringify(systemSettings));
+        
+        closeSettings();
+        alert('Настройки сохранены!');
+    }
+    
+    function loadSettings() {
+        const saved = localStorage.getItem('systemSettings');
+        if (saved) {
+            systemSettings = JSON.parse(saved);
+            applySettings();
+        }
+    }
+    
+    function applySettings() {
+        // Применяем обои
+        document.getElementById('desktop').style.backgroundColor = systemSettings.wallpaper;
+        
+        // Применяем сложность (влияет на игру)
+        switch(systemSettings.difficulty) {
+            case 'easy':
+                // Легкая сложность
+                break;
+            case 'hard':
+                // Сложная сложность
+                break;
+            case 'nightmare':
+                // Кошмарная сложность
+                break;
+        }
+        
+        // Применяем тему
+        applyTheme();
+    }
+    
+    function applyTheme() {
+        const monitor = document.getElementById('monitor');
+        const scanlines = document.querySelector('.scanlines');
+        
+        switch(systemSettings.theme) {
+            case 'classic':
+                // Классическая тема (по умолчанию)
+                monitor.style.borderColor = '#222';
+                break;
+            case 'dark':
+                // Темная тема
+                monitor.style.borderColor = '#111';
+                scanlines.style.background = 'linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(255, 255, 255, 0.05) 50%)';
+                break;
+            case 'matrix':
+                // Матрица
+                monitor.style.borderColor = '#00ff00';
+                monitor.style.boxShadow = '0 0 50px rgba(0, 255, 0, 0.5)';
+                break;
+            case 'retro':
+                // Ретро
+                monitor.style.borderColor = '#ff00ff';
+                monitor.style.boxShadow = '0 0 50px rgba(255, 0, 255, 0.5)';
+                break;
+        }
+    }
+    
+    // ========== КАЛЬКУЛЯТОР ==========
+    function openCalculator() {
+        document.getElementById('calculator-screen').style.display = 'flex';
+        
+        // Включаем музыку калькулятора если включено в настройках
+        if (systemSettings.calcSound) {
+            calculatorMusic.play().catch(e => console.log("Автовоспроизведение заблокировано"));
+        }
+    }
+    
+    function closeCalculator() {
+        document.getElementById('calculator-screen').style.display = 'none';
+        
+        // Выключаем музыку калькулятора
+        calculatorMusic.pause();
+        calculatorMusic.currentTime = 0;
+    }
+    
+    function calcInput(value) {
+        calcExpression += value;
+        document.getElementById('calc-display').textContent = calcExpression;
+    }
+    
+    function clearCalc() {
+        calcExpression = '';
+        document.getElementById('calc-display').textContent = '0';
+    }
+    
+    function calculate() {
+        try {
+            // Заменяем × на *
+            const expression = calcExpression.replace(/×/g, '*');
+            const result = eval(expression);
+            document.getElementById('calc-display').textContent = result;
+            calcExpression = result.toString();
+        } catch (error) {
+            document.getElementById('calc-display').textContent = 'Error';
+            calcExpression = '';
+        }
+    }
+    
+    // ========== ИГРА "ПРИДУМАЙ МЕМ" ==========
+    function openMemeGame() {
+        document.getElementById('meme-game-screen').style.display = 'flex';
+    }
+    
+    function closeMemeGame() {
+        document.getElementById('meme-game-screen').style.display = 'none';
+        document.getElementById('meme-result').style.display = 'none';
+        document.getElementById('meme-input').value = '';
+    }
+    
+    function rateMeme() {
+        const memeText = document.getElementById('meme-input').value.trim();
+        
+        if (!memeText) {
+            alert('Пожалуйста, введите идею для мема!');
+            return;
+        }
+        
+        // Генерируем случайную оценку от 1 до 10
+        let rating = Math.floor(Math.random() * 10) + 1;
+        
+        // Увеличиваем шансы на хорошую оценку для смешных мемов
+        const memeLower = memeText.toLowerCase();
+        
+        // Ключевые слова для высоких оценок
+        const highScoreWords = ['миша25к', 'misha25k', 'гугушка', 'gugushka', 'вирус', 'робукс', 'free robux', 'антивирус', 'паника', 'красная футболка', 'trusiki', 'сервер', 'дискорд', 'roblox', 'гта'];
+        const mediumScoreWords = ['мем', 'шутка', 'смешно', 'ирония', 'сатира', 'прикол', 'юмор'];
+        const lowScoreWords = ['плохо', 'скучно', 'не смешно', 'баян', 'старо'];
+        
+        let scoreBonus = 0;
+        
+        // Проверяем ключевые слова
+        highScoreWords.forEach(word => {
+            if (memeLower.includes(word)) scoreBonus += 1;
+        });
+        
+        mediumScoreWords.forEach(word => {
+            if (memeLower.includes(word)) scoreBonus += 0.5;
+        });
+        
+        lowScoreWords.forEach(word => {
+            if (memeLower.includes(word)) scoreBonus -= 1;
+        });
+        
+        // Ограничиваем бонус
+        scoreBonus = Math.max(-3, Math.min(3, scoreBonus));
+        
+        // Применяем бонус
+        rating = Math.max(1, Math.min(10, rating + scoreBonus));
+        rating = Math.round(rating);
+        
+        // Определяем комментарий
+        let comment = '';
+        let ratingClass = '';
+        
+        if (rating >= 9) {
+            comment = '👑 ИМБА! Этот мем взорвет Trusiki Show!';
+            ratingClass = 'rating-10';
+        } else if (rating >= 7) {
+            comment = '🔥 Превосходно! Мем достоин быть в топе!';
+            ratingClass = 'rating-8-9';
+        } else if (rating >= 5) {
+            comment = '👍 Неплохо! Народ оценит.';
+            ratingClass = 'rating-6-7';
+        } else if (rating >= 3) {
+            comment = '😐 Ну такое... Могло быть и лучше.';
+            ratingClass = 'rating-4-5';
+        } else {
+            comment = '💩 Говно! Даже Миша25к не оценит...';
+            ratingClass = 'rating-1-3';
+        }
+        
+        // Показываем результат
+        document.getElementById('meme-rating').textContent = rating + '/10';
+        document.getElementById('meme-rating').className = 'meme-rating ' + ratingClass;
+        document.getElementById('meme-comment').textContent = comment;
+        document.getElementById('meme-result').style.display = 'block';
+        
+        // Если оценка 10 - особое сообщение
+        if (rating === 10) {
+            setTimeout(() => {
+                alert('🎉 ВАУ! Вы создали шедевр! Этот мем точно станет легендой Trusiki Show!');
+            }, 500);
+        }
+    }
+    
+    // ========== WINDOWS ==========
+    function openGame(g) { 
+        document.getElementById('win-'+g).style.display='flex'; 
+        if(g==='gta') spawnTarget(); 
+        if(g==='roblox') startRobloxLogic(); 
+    }
+    
+    function closeWin(g) { 
+        document.getElementById('win-'+g).style.display='none'; 
+    }
+    
+    function openChat() { 
+        document.getElementById('win-chat').style.display='flex'; 
+    }
+    
+    function openDiscord() {
+        document.getElementById('desktop').style.display='none';
+        document.getElementById('discord-screen').style.display='flex';
+        loadDiscordChannel();
+    }
+    
+    function closeDiscord() {
+        document.getElementById('discord-screen').style.display='none';
+        document.getElementById('desktop').style.display='block';
+    }
+    
+    // ========== DISCORD SETTINGS ==========
+    function openDiscordSettings() {
+        document.getElementById('discord-username').value = discordUser.username;
+        document.getElementById('discord-status').value = discordUser.status;
+        document.getElementById('discord-settings-modal').style.display = 'flex';
+    }
+    
+    function closeDiscordSettings() {
+        document.getElementById('discord-settings-modal').style.display = 'none';
+    }
+    
+    function selectAvatar(color, emoji) {
+        // Убираем выделение со всех аватарок
+        document.querySelectorAll('.avatar-option').forEach(avatar => {
+            avatar.classList.remove('selected');
+        });
+        
+        // Выделяем выбранную
+        event.target.classList.add('selected');
+        
+        // Сохраняем выбор
+        selectedAvatar.color = color;
+        selectedAvatar.emoji = emoji;
+        
+        // Обновляем текст
+        document.getElementById('selected-avatar-text').textContent = emoji;
+        
+        // Показываем предпросмотр
+        updateUserPreview();
+    }
+    
+    function saveDiscordSettings() {
+        const username = document.getElementById('discord-username').value.trim();
+        const status = document.getElementById('discord-status').value;
+        
+        if (username) {
+            // Сохраняем настройки
+            discordUser.username = username;
+            discordUser.avatarColor = selectedAvatar.color;
+            discordUser.avatarEmoji = selectedAvatar.emoji;
+            discordUser.status = status;
+            
+            // Сохраняем в localStorage
+            localStorage.setItem('discordUser', JSON.stringify(discordUser));
+            
+            // Обновляем предпросмотр
+            updateUserPreview();
+            
+            closeDiscordSettings();
+            alert('Настройки сохранены!');
+        } else {
+            alert('Пожалуйста, введите ник!');
+        }
+    }
+    
+    function loadDiscordSettings() {
+        const saved = localStorage.getItem('discordUser');
+        if (saved) {
+            discordUser = JSON.parse(saved);
+            selectedAvatar.color = discordUser.avatarColor;
+            selectedAvatar.emoji = discordUser.avatarEmoji;
+            
+            // Выделяем сохраненную аватарку
+            document.querySelectorAll('.avatar-option').forEach(avatar => {
+                avatar.classList.remove('selected');
+            });
+            
+            // Находим и выделяем сохраненную аватарку
+            let avatarIndex = 1;
+            if (discordUser.avatarColor === '#ff6b6b') avatarIndex = 2;
+            else if (discordUser.avatarColor === '#4ecdc4') avatarIndex = 3;
+            else if (discordUser.avatarColor === '#ffd166') avatarIndex = 4;
+            else if (discordUser.avatarColor === '#06d6a0') avatarIndex = 5;
+            else if (discordUser.avatarColor === '#ef476f') avatarIndex = 6;
+            
+            document.getElementById('avatar-' + avatarIndex)?.classList.add('selected');
+        }
+        
+        updateUserPreview();
+    }
+    
+    function updateUserPreview() {
+        document.getElementById('user-avatar-preview').style.background = selectedAvatar.color;
+        document.getElementById('user-avatar-preview').textContent = selectedAvatar.emoji;
+        document.getElementById('user-name-preview').textContent = discordUser.username;
+    }
+    
+    // ========== DISCORD SYSTEM ==========
+    const discordResponses = {
+        'misha': [
+            "Эй, если тебе страшно, просто представь что это игра. Я вот всегда так делаю.",
+            "Хочешь совет? Никогда не показывай свой страх. Они это чувствуют.",
+            "Знаешь, иногда лучший способ справиться с проблемой - это встретиться с ней лицом к лицу.",
+            "Я просто хотел подружиться, честно. Люди часто меня неправильно понимают."
+        ],
+        'gugu': [
+            "Привет! Если чувствуешь опасность - звони 112 сразу! Не жди!",
+            "Запомни: всегда имей план побега. Заранее продумай маршруты.",
+            "Расскажи кому-нибудь где ты находишься. Безопасность прежде всего!",
+            "Установи приложение 'Безопасный район' - там есть тревожная кнопка."
+        ],
+        'police': [
+            "Гражданин, при подозрении на слежку немедленно звоните 102.",
+            "Рекомендуем установить дополнительные замки на окна и двери.",
+            "Если вас преследуют, идите в людное место и зовите на помощь.",
+            "Фиксируйте все подозрительные события - это поможет следствию."
+        ],
+        'psycho': [
+            "Глубокое дыхание 4-7-8 поможет снизить тревожность.",
+            "Травматический опыт нужно прорабатывать с специалистом.",
+            "Не вините себя. Вы жертва обстоятельств, а не их причина.",
+            "Создайте 'безопасное место' в своем воображении - это техника якорения."
+        ],
+        'general': [
+            "Кто играет в кс?",
+            "Сегодня такая луна... жутковатая",
+            "Вы слышали про того парня из 4 подъезда?",
+            "Кто-то знает хорошего психолога?"
+        ]
+    };
+    
+    const discordCharacters = {
+        'misha': {name: 'Misha25k', color: '#ff5555', avatar: '👁️'},
+        'gugu': {name: 'Gugushka', color: '#55ff55', avatar: '🛡️'},
+        'police': {name: 'Police_Support', color: '#5555ff', avatar: '👮'},
+        'psycho': {name: 'Psycho_Doctor', color: '#ffaa00', avatar: '🧠'},
+        'anon': {name: 'Anon_User', color: '#aaaaaa', avatar: '👤'},
+        'girl': {name: 'Scared_Girl', color: '#ff55ff', avatar: '👧'},
+        'system': {name: 'System', color: '#72767d', avatar: '⚙️'}
+    };
+    
+    function switchChannel(channel) {
+        currentDiscordChannel = channel;
+        document.querySelectorAll('.channel').forEach(el => el.classList.remove('active'));
+        event.target.classList.add('active');
+        loadDiscordChannel();
+    }
+    
+    function loadDiscordChannel() {
+        const chat = document.getElementById('discord-chat');
+        chat.innerHTML = '';
+        
+        // Приветственное сообщение в зависимости от канала
+        let welcomeMsg = '';
+        switch(currentDiscordChannel) {
+            case 'general':
+                welcomeMsg = "Добро пожаловать в общий чат. Здесь можно обсудить что угодно.";
+                addDiscordMessage('system', welcomeMsg);
+                break;
+            case 'misha':
+                welcomeMsg = "🔒 Приватный канал. Misha25k иногда заходит сюда.";
+                addDiscordMessage('system', welcomeMsg);
+                addDiscordMessage('misha', 'Кто-то звал?');
+                break;
+            case 'gugu':
+                welcomeMsg = "🛡️ Канал помощи от Gugushka. Безопасность - наш приоритет!";
+                addDiscordMessage('system', welcomeMsg);
+                addDiscordMessage('gugu', 'Привет! Нужна помощь?');
+                break;
+            case 'police':
+                welcomeMsg = "🚔 Официальный канал поддержки полиции. Не для шуток.";
+                addDiscordMessage('system', welcomeMsg);
+                addDiscordMessage('police', 'Сообщайте о подозрительной активности.');
+                break;
+            case 'psycho':
+                welcomeMsg = "🧠 Психологическая поддержка. Здесь безопасно.";
+                addDiscordMessage('system', welcomeMsg);
+                addDiscordMessage('psycho', 'Дышите глубже. Вы не одиноки.');
+                break;
+            case 'trusiki':
+                welcomeMsg = "🎭 Добро пожаловать в Trusiki Show!";
+                addDiscordMessage('system', welcomeMsg);
+                break;
+        }
+        
+        // Загружаем историю из localStorage
+        const history = JSON.parse(localStorage.getItem(`discord_${currentDiscordChannel}`)) || [];
+        history.forEach(msg => {
+            addDiscordMessage(msg.sender, msg.text, false, msg.time);
+        });
+        
+        // Для каналов Trusiki help и memes
+        if (currentDiscordChannel === 'trusiki-help' || currentDiscordChannel === 'trusiki-memes') {
+            const defaultMessages = {
+                'trusiki-help': [
+                    {sender: 'system', text: '🆘 Центр помощи Trusiki Show. Задавайте вопросы!', time: '10:00'},
+                    {sender: 'gugu', text: 'Если у вас проблемы с безопасностью - пишите мне в ЛС!', time: '10:05'},
+                    {sender: 'police', text: 'Для экстренных случаев звоните 112!', time: '10:10'}
+                ],
+                'trusiki-memes': [
+                    {sender: 'system', text: '😂 Мемы и развлечения. Главное - не спамить!', time: '10:00'},
+                    {sender: 'anon', text: '😂 Когда антивирус не может удалить вирус, но ты уже решил головоломку:', time: '10:15'},
+                    {sender: 'girl', text: '👻 Мем про Мишу 25к когда он видит красную футболку:', time: '10:20'}
+                ]
+            };
+            
+            defaultMessages[currentDiscordChannel].forEach(msg => {
+                addDiscordMessage(msg.sender, msg.text, false, msg.time);
+            });
+        }
+    }
+    
+    function addDiscordMessage(sender, text, save = true, customTime = null) {
+        const chat = document.getElementById('discord-chat');
+        const character = discordCharacters[sender] || discordCharacters['anon'];
+        const time = customTime || new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        const msgHTML = `
+            <div class="discord-msg">
+                <div class="discord-avatar" style="background: ${character.color}; text-align: center; line-height: 40px; font-size: 20px;">
+                    ${character.avatar}
+                </div>
+                <div style="display: inline-block;">
+                    <span class="discord-name" style="color: ${character.color}">${character.name}</span>
+                    <span class="discord-time">${time}</span>
+                    <div class="discord-content">${text}</div>
+                </div>
+            </div>
+        `;
+        
+        chat.innerHTML += msgHTML;
+        chat.scrollTop = chat.scrollHeight;
+        
+        if(save && sender !== 'system') {
+            const history = JSON.parse(localStorage.getItem(`discord_${currentDiscordChannel}`)) || [];
+            history.push({sender, text, time});
+            if(history.length > 50) history.shift();
+            localStorage.setItem(`discord_${currentDiscordChannel}`, JSON.stringify(history));
+        }
+    }
+    
+    function sendDiscord() {
+        const input = document.getElementById('discord-input');
+        const text = input.value.trim();
+        if(!text) return;
+        
+        // Добавляем сообщение игрока
+        addDiscordMessage('user', text);
+        input.value = '';
+        
+        // Рандомный ответ от NPC в зависимости от канала
+        setTimeout(() => {
+            let response = '';
+            let responder = '';
+            
+            if(currentDiscordChannel === 'general') {
+                // Случайный NPC отвечает в общем чате
+                const npcs = ['misha', 'gugu', 'police', 'psycho', 'anon', 'girl'];
+                responder = npcs[Math.floor(Math.random() * npcs.length)];
+                const responses = discordResponses[responder] || discordResponses['general'];
+                response = responses[Math.floor(Math.random() * responses.length)];
+            } else {
+                // В тематическом канале отвечает соответствующий NPC
+                responder = currentDiscordChannel;
+                const responses = discordResponses[responder] || ['...'];
+                response = responses[Math.floor(Math.random() * responses.length)];
+            }
+            
+            addDiscordMessage(responder, response);
+            
+            // Иногда другие NPC тоже отвечают
+            if(Math.random() > 0.7 && currentDiscordChannel === 'general') {
+                setTimeout(() => {
+                    const otherNpcs = Object.keys(discordCharacters).filter(npc => 
+                        npc !== responder && npc !== 'user' && npc !== 'system' && discordResponses[npc]
+                    );
+                    if(otherNpcs.length > 0) {
+                        const other = otherNpcs[Math.floor(Math.random() * otherNpcs.length)];
+                        const otherResponses = discordResponses[other] || ['Согласен.'];
+                        addDiscordMessage(other, otherResponses[Math.floor(Math.random() * otherResponses.length)]);
+                    }
+                }, 1000 + Math.random() * 2000);
+            }
+        }, 500 + Math.random() * 1500);
+    }
+    
+    // ========== BROWSER FUNCTIONS ==========
+    function openBrowser() {
+        document.getElementById('desktop').style.display='none';
+        document.getElementById('browser-screen').style.display='flex';
+        loadBrowserTab('home');
+    }
+    
+    function closeBrowser() {
+        document.getElementById('browser-screen').style.display='none';
+        document.getElementById('desktop').style.display='block';
+    }
+    
+    function goBack() {
+        alert('Назад');
+    }
+    
+    function goForward() {
+        alert('Вперед');
+    }
+    
+    function refreshPage() {
+        loadBrowserTab(currentTab || 'home');
+    }
+    
+    let currentTab = 'home';
+    
+    function switchTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.browser-tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        loadBrowserTab(tab);
+    }
+    
+    // ========== GTA MINI-GAME ==========
+    function spawnTarget() {
+        if(kills>=3) {
+            closeWin('gta'); 
+            openChat();
+            startIntroChat();
+            return;
+        }
+        let t = document.createElement('div'); 
+        t.className='target';
+        t.style.top=Math.random()*250+'px'; 
+        t.style.left=Math.random()*550+'px';
+        t.onmousedown=function(){
+            this.remove(); 
+            kills++; 
+            document.getElementById('kills').innerText=kills; 
+            spawnTarget();
+        };
+        document.getElementById('game-canvas').appendChild(t);
+    }
+    
+    // ========== CHAT SYSTEM ==========
+    function addMsg(n, t, type) {
+        let h=document.getElementById('chat-history');
+        h.innerHTML+=`<div class="msg ${type}"><b>${n}:</b> ${t}</div>`;
+        h.scrollTop=h.scrollHeight;
+    }
+    
+    function showTyping(who) { 
+        document.getElementById('typing-indicator').innerText=who+" печатает..."; 
+        document.getElementById('typing-indicator').style.display='block'; 
+    }
+    
+    function hideTyping() { 
+        document.getElementById('typing-indicator').style.display='none'; 
+    }
+    
+    function startIntroChat() {
+        addMsg("System", "Match finished.", "sys");
+        setTimeout(()=>addMsg("Misha25k", "Неплохо стреляешь.", "him"), 1000);
+        storyStep = 0;
+    }
+    
+    function startRobloxLogic() {
+        setTimeout(()=>{
+            document.getElementById('gugushka-char').style.display='block';
+            addRobloxChat("Gugushka: Привет! Давай дружить?");
+            setTimeout(()=>{ 
+                closeWin('roblox'); 
+                openChat(); 
+                startGugushkaDialog(); 
+            }, 3000);
+        }, 1000);
+    }
+    
+    function robloxClick() { 
+        addRobloxChat("You jumped!"); 
+    }
+    
+    function addRobloxChat(t) { 
+        document.getElementById('roblox-chat').innerHTML += `<div>${t}</div>`; 
+    }
+    
+    function startGugushkaDialog() {
+        document.getElementById('chat-history').innerHTML = ""; 
+        addMsg("Gugushka", "Привет, это я из Роблокса!", "gugu");
+        showTyping("Gugushka");
+        setTimeout(()=>{ 
+            hideTyping(); 
+            addMsg("Gugushka", "Что случилось? Ты молчишь.", "gugu"); 
+        }, 2000);
+        storyStep = 0;
+    }
+    
+    function sendBtn() {
+        let i=document.getElementById('chat-input');
+        if(!i.value) return;
+        addMsg("You", i.value, "me");
+        i.value="";
+
+        // PHASE 0: MISHA INTRO
+        if(phase === 0) {
+            if(storyStep === 0) {
+                 setTimeout(()=>addMsg("Misha25k", "Го дружить?", "him"), 1500);
+                 storyStep++;
+            } else if (storyStep === 1) {
+                 setTimeout(()=>addMsg("Misha25k", "Классная аватарка. Это вид из окна?", "him"), 2000);
+                 storyStep++;
+            } else if (storyStep === 2) {
+                 setTimeout(()=>addMsg("Misha25k", "Я живу напротив. Вижу тебя.", "him"), 2000);
+                 setTimeout(()=>{
+                     addMsg("Misha25k", "КРАСНАЯ ФУТБОЛКА.", "him");
+                     addMsg("System", "INTRUDER ALERT", "sys");
+                     setTimeout(()=>startRoom(1), 3000);
+                 }, 4000);
+            }
+        }
+
+        // PHASE 1: GUGUSHKA
+        if(phase === 1) {
+            if(storyStep === 0) {
+                showTyping("Gugushka");
+                setTimeout(()=>{ 
+                    hideTyping(); 
+                    addMsg("Gugushka", "Жесть... Какой ник у этого маньяка?", "gugu"); 
+                    storyStep++; 
+                }, 1500);
+            }
+            else if(storyStep === 1) {
+                showTyping("Gugushka");
+                setTimeout(()=>{ 
+                    hideTyping(); 
+                    addMsg("Gugushka", "Пробиваю...", "gugu"); 
+                    setTimeout(()=>{ 
+                        addMsg("Gugushka", "О БОЖЕ. ЭТО ОН! ОН В РОЗЫСКЕ!", "gugu"); 
+                        triggerMishaThreat(); 
+                    }, 2000);
+                }, 1500);
+            }
+        }
+        
+        // PHASE 2: FINALE PREP
+        if(phase === 2 && storyStep === 10) {
+            setTimeout(()=>addMsg("Gugushka", "Береги себя.", "gugu"), 1000);
+            setTimeout(()=>startTimeSkip("СПУСТЯ 30 МИНУТ...", 3), 3000);
+        }
+
+        // PHASE 3: ENDING
+        if(phase === 3) {
+            setTimeout(()=>addMsg("Misha25k", "Ничего. Смирись с этим.", "him"), 1500);
+            setTimeout(()=>{ 
+                document.body.innerHTML = "<h1 style='color:red; font-size:50px; text-align:center;'>ПРОДОЛЖЕНИЕ СЛЕДУЕТ...</h1>"; 
+            }, 4000);
+        }
+    }
+    
+    function triggerMishaThreat() {
+        setTimeout(()=>{
+            addMsg("Misha25k", "Жди гостей.", "him");
+            setTimeout(()=>{
+                addMsg("Gugushka", "ЗАКОЛОТИ ДВЕРЬ! БЫСТРЕЕ!", "gugu");
+                setTimeout(()=>startRoom(2), 2000);
+            }, 2000);
+        }, 1000);
+    }
+    
+    // ========== HORROR ROOM ==========
+    function startRoom(p) {
+        document.getElementById('desktop').style.display='none';
+        document.getElementById('room-scene').style.display='block';
+        isTransitioning = false;
+        planksD=0; planksW=0;
+        if(p===1) {
+            document.getElementById('face').style.display='block';
+            document.getElementById('room-msg').innerText="ОКНО И ДВЕРЬ!";
+        } else {
+            document.getElementById('room-msg').innerText="ЗАКОЛОТИ ДВЕРЬ (ОН ИДЕТ)!";
+            planksW=5;
+        }
+    }
+    
+    function barricade(t) {
+        if(isTransitioning) return;
+        let p=document.createElement('div'); 
+        p.className='plank'; 
+        p.style.top=Math.random()*150+'px';
+        if(t==='win' && planksW<5) { 
+            document.getElementById('win-obj').appendChild(p); 
+            planksW++; 
+        }
+        if(t==='door' && planksD<5) { 
+            document.getElementById('door-obj').appendChild(p); 
+            planksD++; 
+        }
+        
+        if(planksW>=5 && planksD>=5) {
+            if(phase===0) { 
+                document.getElementById('face').style.display='none';
+                document.getElementById('hide-btn').style.display='block';
+            }
+            if(phase===1) { 
+                isTransitioning = true;
+                document.getElementById('room-msg').innerText = "ФУХ... ВРОДЕ УСПЕЛ...";
+                document.getElementById('room-msg').style.color = "lime";
+                setTimeout(() => {
+                    alert("*КТО-ТО ДЕРГАЕТ РУЧКУ ДВЕРИ*");
+                    setTimeout(()=>startTimeSkip("ДЕНЬ 1", 2), 2000);
+                }, 1000);
+            }
+        }
+    }
+    
+    // ========== HIDING MINI-GAME ==========
+    let panic = 0;
+    let markerPos = 0;
+    let direction = 1;
+    let gameInterval;
+    let timeLeft = 15;
+    
+    function startHiding() {
+        document.getElementById('room-scene').style.display='none';
+        document.getElementById('hiding-spot').style.display='flex';
+        
+        panic = 30;
+        timeLeft = 15;
+        
+        gameInterval = setInterval(gameLoop, 20);
+        document.addEventListener('keydown', checkHit);
+    }
+    
+    function gameLoop() {
+        // Move marker
+        markerPos += 2 * direction;
+        if(markerPos > 390 || markerPos < 0) direction *= -1;
+        document.getElementById('marker').style.left = markerPos + 'px';
+
+        // Passive panic increase
+        panic += 0.1;
+        document.getElementById('panic-fill').style.width = panic + "%";
+
+        // Time
+        if(Math.random() > 0.95) timeLeft -= 0.1; // Slow timer
+        document.getElementById('survival-timer').innerText = Math.floor(timeLeft);
+
+        if(panic >= 100) {
+            clearInterval(gameInterval);
+            document.body.innerHTML = "<h1 style='color:red; font-size:100px;'>ТЫ ВПАЛ В ПАНИКУ.<br>ОН НАШЕЛ ТЕБЯ.</h1>";
+        }
+        
+        if(timeLeft <= 0) {
+            clearInterval(gameInterval);
+            document.removeEventListener('keydown', checkHit);
+            startTimeSkip("УТРО...", 1);
+        }
+    }
+    
+    function checkHit(e) {
+        if(e.code === 'Space') {
+            // Safe zone is 40% to 60% of 400px container (160px to 240px)
+            if(markerPos > 160 && markerPos < 240) {
+                panic -= 15; // Success
+                if(panic < 0) panic = 0;
+                document.getElementById('safe-zone').style.background = 'white';
+                setTimeout(()=>document.getElementById('safe-zone').style.background = 'lime', 100);
+            } else {
+                panic += 20; // Fail
+            }
+        }
+    }
+    
+    // ========== TIME SKIP ==========
+    function startTimeSkip(text, nextPhase) {
+        document.getElementById('room-scene').style.display='none';
+        document.getElementById('hiding-spot').style.display='none';
+        document.getElementById('win-chat').style.display='none'; 
+        let ts = document.getElementById('time-skip');
+        ts.style.display='flex';
+        document.getElementById('time-text').innerText = text;
+        
+        setTimeout(()=>{
+            ts.style.display='none';
+            if(nextPhase===1) { 
+                phase=1; 
+                document.getElementById('login-screen').style.display='flex'; 
+            }
+            if(nextPhase===2) { // День 1
+                phase=2;
+                document.getElementById('login-screen').style.display='flex';
+                document.getElementById('chat-history').innerHTML="";
+                addMsg("Gugushka", "Ну че, ты там живой хоть?", "gugu");
+                storyStep=10;
+            }
+            if(nextPhase===3) { 
+                phase=3; 
+                document.getElementById('login-screen').style.display='flex'; 
+            }
+        }, 3000);
+    }
+    
+    function finalMisha() {
+        addMsg("Misha25k", "Как я понял, ты уже всё сам понял.", "him");
+        alert("ЗАДАНИЕ: Напиши 'ЧТО ТЕБЕ НУЖНО?'");
+    }
+    
+    // ========== BROWSER CONTENT ==========
+    function loadBrowserTab(tab) {
+        const content = document.getElementById('browser-content');
+        
+        switch(tab) {
+            case 'home':
+                content.innerHTML = `
+                    <div style="padding: 20px;">
+                        <h1>Браузер</h1>
+                        <p>Добро пожаловать! Быстрые ссылки:</p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
+                            <div style="width: 100px; text-align: center; cursor: pointer;" onclick="switchTab('freerobux')">
+                                <div style="width: 64px; height: 64px; background: linear-gradient(45deg, #ff9900, #ff3300); margin: 0 auto; border-radius: 10px;"></div>
+                                <div>FreeRobux</div>
+                            </div>
+                            <div style="width: 100px; text-align: center; cursor: pointer;" onclick="switchTab('youtube')">
+                                <div style="width: 64px; height: 64px; background: #ff0000; margin: 0 auto; border-radius: 10px;"></div>
+                                <div>YouTube</div>
+                            </div>
+                            <div style="width: 100px; text-align: center; cursor: pointer;" onclick="switchTab('antivirus')">
+                                <div style="width: 64px; height: 64px; background: #00cc00; margin: 0 auto; border-radius: 10px;"></div>
+                                <div>Антивирус</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                break;
+                
+            case 'freerobux':
+                content.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h1 style="color: #ff9900;">🎮 FREE ROBUX GENERATOR 🎮</h1>
+                        <p style="font-size: 18px;">Получи БЕСПЛАТНЫЕ Robux за 2 минуты!</p>
+                        
+                        <div style="background: #f0f0f0; padding: 20px; border-radius: 10px; margin: 20px auto; max-width: 500px;">
+                            <h2>ШАГ 1: Введите свой Roblox ник</h2>
+                            <input type="text" id="roblox-username" placeholder="Ваш ник в Roblox" style="padding: 10px; width: 80%; margin: 10px;">
+                            
+                            <h2>ШАГ 2: Выберите количество Robux</h2>
+                            <div style="display: flex; justify-content: center; gap: 10px; margin: 20px;">
+                                <button onclick="selectRobuxAmount(1000)" style="padding: 10px; background: #ff9900; color: white; border: none; border-radius: 5px; cursor: pointer;">1,000 🤑</button>
+                                <button onclick="selectRobuxAmount(5000)" style="padding: 10px; background: #ff6600; color: white; border: none; border-radius: 5px; cursor: pointer;">5,000 🤑</button>
+                                <button onclick="selectRobuxAmount(10000)" style="padding: 10px; background: #ff3300; color: white; border: none; border-radius: 5px; cursor: pointer;">10,000 🤑</button>
+                            </div>
+                            
+                            <h2>ШАГ 3: Скачайте генератор</h2>
+                            <button onclick="downloadFreeRobux()" style="padding: 15px 30px; background: #00cc00; color: white; border: none; border-radius: 10px; font-size: 18px; cursor: pointer;">
+                                ⬇️ СКАЧАТЬ FREE ROBUX GENERATOR.EXE
+                            </button>
+                            
+                            <p style="margin-top: 20px; color: #666; font-size: 12px;">
+                                * Работает только на Windows 10/11<br>
+                                * Требуется отключить антивирус<br>
+                                * 100% рабочий метод
+                            </p>
+                        </div>
+                        
+                        <div id="download-progress" style="display:none; margin-top: 20px;">
+                            <div style="width: 100%; height: 20px; background: #ddd; border-radius: 10px;">
+                                <div id="progress-bar" style="width: 0%; height: 100%; background: #00cc00; border-radius: 10px; transition: width 0.5s;"></div>
+                            </div>
+                            <p id="progress-text">Загрузка...</p>
+                        </div>
+                    </div>
+                `;
+                break;
+                
+            case 'youtube':
+                content.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <div style="width: 200px; height: 200px; background: #ff0000; margin: 50px auto; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                            <span style="color: white; font-size: 48px;">YT</span>
+                        </div>
+                        <h1 style="color: #ff0000;">YouTube</h1>
+                        <p style="font-size: 24px; color: #666; margin-top: 30px;">
+                            ⚠️ Сайт временно недоступен<br>
+                            Ведутся технические работы
+                        </p>
+                        <p style="margin-top: 20px;">Ожидаемое время восстановления: неизвестно</p>
+                    </div>
+                `;
+                break;
+                
+            case 'antivirus':
+                content.innerHTML = `
+                    <div style="padding: 20px;">
+                        <h1 style="color: #00cc00;">🛡️ Антивирусная защита</h1>
+                        
+                        <div style="background: #f0f0f0; padding: 20px; border-radius: 10px; margin-top: 20px;">
+                            <h2>Статус системы:</h2>
+                            <div id="system-status" style="margin: 20px 0;">
+                                ${hasVirus && !virusSolved ? 
+                                    '<div style="color: red; font-size: 24px;">⚠️ ОБНАРУЖЕНА УГРОЗА!</div>' : 
+                                    '<div style="color: green; font-size: 24px;">✅ Система защищена</div>'
+                                }
+                            </div>
+                            
+                            <h2>Доступные инструменты:</h2>
+                            <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
+                                <button onclick="runQuickScan()" style="padding: 15px; background: #00aaff; color: white; border: none; border-radius: 5px; cursor: pointer; flex: 1;">
+                                    Быстрая проверка
+                                </button>
+                                <button onclick="runFullScan()" style="padding: 15px; background: #009900; color: white; border: none; border-radius: 5px; cursor: pointer; flex: 1;">
+                                    Полная проверка
+                                </button>
+                                <button onclick="showVirusSolution()" style="padding: 15px; background: ${hasVirus && !virusSolved ? '#ff4444' : '#cccccc'}; color: white; border: none; border-radius: 5px; cursor: pointer; flex: 1;">
+                                    ${hasVirus && !virusSolved ? 'ПОКАЗАТЬ РЕШЕНИЕ' : 'Нет угроз'}
+                                </button>
+                            </div>
+                            
+                            <div id="scan-results" style="margin-top: 30px; padding: 15px; background: white; border-radius: 5px; display: none;">
+                                <h3>Результаты сканирования:</h3>
+                                <div id="scan-details"></div>
+                            </div>
+                            
+                            ${hasVirus && !virusSolved ? `
+                                <div style="margin-top: 30px; padding: 15px; background: #fff8e1; border-left: 5px solid #ffcc00;">
+                                    <h3>⚠️ Рекомендуемые действия:</h3>
+                                    <ol>
+                                        <li>Этот вирус нельзя удалить обычным антивирусом</li>
+                                        <li>Вернитесь на экран вируса и решите головоломку</li>
+                                        <li>Код для разблокировки: 4 цифры (подсказка в вирусе)</li>
+                                        <li>Или попробуйте ввести код наугад: 4 2 3 1</li>
+                                    </ol>
+                                    <button onclick="openBrowserFromVirus()" style="margin-top: 10px; padding: 10px; background: #ff9900; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                        Вернуться к вирусу
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                break;
+        }
+    }
+    
+    function navigateTo() {
+        const url = document.getElementById('browser-url').value.toLowerCase();
+        if(url.includes('freerobux')) {
+            switchTab('freerobux');
+        } else if(url.includes('youtube')) {
+            switchTab('youtube');
+        } else {
+            switchTab('home');
+        }
+    }
+    
+    // ========== FREEROBUX SYSTEM ==========
+    function selectRobuxAmount(amount) {
+        alert(`Вы выбрали ${amount} Robux!`);
+    }
+    
+    function downloadFreeRobux() {
+        const progress = document.getElementById('download-progress');
+        const bar = document.getElementById('progress-bar');
+        const text = document.getElementById('progress-text');
+        
+        progress.style.display = 'block';
+        
+        let progressValue = 0;
+        const interval = setInterval(() => {
+            progressValue += Math.random() * 15;
+            bar.style.width = progressValue + '%';
+            
+            if(progressValue < 30) text.innerText = 'Подготовка...';
+            else if(progressValue < 60) text.innerText = 'Загрузка файлов...';
+            else if(progressValue < 90) text.innerText = 'Проверка...';
+            else text.innerText = 'Завершение...';
+            
+            if(progressValue >= 100) {
+                clearInterval(interval);
+                text.innerText = 'Загрузка завершена!';
+                
+                setTimeout(() => {
+                    // Добавляем иконку на рабочий стол
+                    document.getElementById('freerobux-icon').style.display = 'inline-block';
+                    alert('FreeRobux Generator успешно установлен! Проверьте иконку на рабочем столе.');
+                    
+                    // Через 10 секунд активируем вирус
+                    setTimeout(() => {
+                        hasVirus = true;
+                        virusSolved = false;
+                        document.getElementById('virus-notification').style.display = 'block';
+                        document.getElementById('antivirus-icon').style.display = 'inline-block';
+                        
+                        // Включаем музыку вируса если включено в настройках
+                        if (systemSettings.virusSound) {
+                            virusMusic.play().catch(e => console.log("Автовоспроизведение заблокировано"));
+                        }
+                    }, 10000);
+                }, 1000);
+            }
+        }, 200);
+    }
+    
+    function openFreeRobux() {
+        alert('Запуск FreeRobux Generator...\n\n⚠️ ВНИМАНИЕ: Windows Defender заблокировал эту программу!\nОбнаружен вирус: Trojan.RobuxStealer\n\nРекомендуется удалить программу.');
+        showVirusScreen();
+    }
+    
+    function openAntivirus() {
+        openBrowser();
+        switchTab('antivirus');
+    }
+    
+    function showVirusSolution() {
+        if(hasVirus && !virusSolved) {
+            alert('💡 ПОДСКАЗКА:\n\nАнтивирус не может удалить этот вирус!\nВам нужно вернуться на экран вируса и решить головоломку.\n\nКод состоит из 4 цифр. Попробуйте комбинации!');
+            document.getElementById('browser-screen').style.display = 'none';
+            showVirusScreen();
+        } else {
+            alert('Угроз не обнаружено!');
+        }
+    }
+    
+    // ========== VIRUS SYSTEM ==========
+    function showVirusScreen() {
+        document.getElementById('virus-notification').style.display = 'none';
+        document.getElementById('virus-screen').style.display = 'flex';
+        document.getElementById('browser-screen').style.display = 'none';
+        document.getElementById('desktop').style.display = 'none';
+        
+        // Включаем музыку вируса если включено в настройках
+        if (systemSettings.virusSound && hasVirus && !virusSolved) {
+            virusMusic.play().catch(e => console.log("Автовоспроизведение заблокировано"));
+        }
+        
+        // Сбрасываем код при каждом открытии
+        virusCode = [];
+        updateCodeDisplay();
+        
+        // Показываем все тексты сразу если вирус уже показывался
+        if(virusTimer < 60) {
+            document.getElementById('virus-text-2').style.display = 'block';
+            document.getElementById('virus-text-3').style.display = 'block';
+            document.getElementById('virus-text-4').style.display = 'block';
+            document.getElementById('virus-text-5').style.display = 'block';
+            document.getElementById('fix-btn').style.display = 'none';
+            document.getElementById('browser-btn').style.display = 'inline-block';
+        } else {
+            // Запускаем последовательность сообщений
+            setTimeout(() => {
+                document.getElementById('virus-text-2').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('virus-text-3').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('virus-text-4').style.display = 'block';
+                        setTimeout(() => {
+                            document.getElementById('virus-text-5').style.display = 'block';
+                            document.getElementById('fix-btn').style.display = 'none';
+                            document.getElementById('browser-btn').style.display = 'inline-block';
+                        }, 2000);
+                    }, 2000);
+                }, 2000);
+            }, 2000);
+        }
+        
+        // Запускаем таймер
+        startVirusTimer();
+    }
+    
+    function startVirusTimer() {
+        const timerElement = document.getElementById('virus-timer');
+        virusTimer = 60;
+        
+        const timer = setInterval(() => {
+            virusTimer--;
+            timerElement.innerText = virusTimer;
+            
+            if(virusTimer <= 0) {
+                clearInterval(timer);
+                document.body.innerHTML = `
+                    <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:black; color:red; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <h1 style="font-size: 72px;">💀 ВАШ КОМПЬЮТЕР УНИЧТОЖЕН 💀</h1>
+                        <p style="font-size: 24px;">Все файлы удалены...</p>
+                        <button onclick="location.reload()" style="margin-top:50px; padding:20px; background:red; color:white; border:none; font-size:20px;">
+                            Перезагрузить симуляцию
+                        </button>
+                    </div>
+                `;
+            }
+        }, 1000);
+    }
+    
+    function tryFixVirus() {
+        document.getElementById('virus-puzzle').style.display = 'block';
+        document.getElementById('fix-btn').style.display = 'none';
+    }
+    
+    function addCodeDigit(digit) {
+        if(virusCode.length < 4) {
+            virusCode.push(digit);
+            updateCodeDisplay();
+        }
+    }
+    
+    function updateCodeDisplay() {
+        const display = document.getElementById('code-display');
+        let displayText = '';
+        for(let i = 0; i < 4; i++) {
+            if(i < virusCode.length) {
+                displayText += virusCode[i] + ' ';
+            } else {
+                displayText += '_ ';
+            }
+        }
+        display.innerText = displayText;
+    }
+    
+    function checkVirusCode() {
+        let correct = true;
+        for(let i = 0; i < 4; i++) {
+            if(virusCode[i] !== correctCode[i]) {
+                correct = false;
+                break;
+            }
+        }
+        
+        if(correct) {
+            document.getElementById('virus-puzzle').innerHTML = '<div style="color:lime; font-size:24px;">✅ Код принят! Вирус деактивирован!</div>';
+            document.getElementById('complete-btn').style.display = 'inline-block';
+            virusSolved = true;
+            
+            // Выключаем музыку вируса
+            virusMusic.pause();
+            virusMusic.currentTime = 0;
+        } else {
+            alert('❌ Неверный код! Попробуйте еще раз.');
+            virusCode = [];
+            updateCodeDisplay();
+        }
+    }
+    
+    function openBrowserFromVirus() {
+        document.getElementById('virus-screen').style.display = 'none';
+        openBrowser();
+        switchTab('antivirus');
+    }
+    
+    function completeVirus() {
+        hasVirus = false;
+        virusSolved = true;
+        document.getElementById('virus-screen').style.display = 'none';
+        document.getElementById('desktop').style.display = 'block';
+        alert('✅ Вирус успешно удален! Система очищена.');
+        
+        // Убираем иконку FreeRobux
+        document.getElementById('freerobux-icon').style.display = 'none';
+        
+        // Выключаем музыку вируса
+        virusMusic.pause();
+        virusMusic.currentTime = 0;
+        
+        // Даем достижение
+        setTimeout(() => {
+            alert('🏆 Достижение получено: "Хакер"\nВы успешно обезвредили вирус!');
+        }, 1000);
+    }
+    
+    // ========== ANTIVIRUS FUNCTIONS ==========
+    function runQuickScan() {
+        const results = document.getElementById('scan-results');
+        const details = document.getElementById('scan-details');
+        
+        results.style.display = 'block';
+        details.innerHTML = `
+            <p>🔍 Сканирование запущено...</p>
+            <div id="scan-progress"></div>
+        `;
+        
+        let progress = '';
+        setTimeout(() => {
+            progress += '▮ Проверка системных файлов... ✅<br>';
+            document.getElementById('scan-progress').innerHTML = progress;
+            
+            setTimeout(() => {
+                progress += '▮ Проверка реестра... ✅<br>';
+                document.getElementById('scan-progress').innerHTML = progress;
+                
+                setTimeout(() => {
+                    progress += '▮ Проверка запущенных процессов...<br>';
+                    if(hasVirus && !virusSolved) {
+                        progress += '⚠️ Обнаружен: Trojan.RobuxStealer.exe<br>';
+                        progress += '📍 Расположение: C:/Users/Desktop/FreeRobux.exe<br>';
+                        progress += '⚠️ <strong>ОШИБКА: Не могу удалить!</strong><br>';
+                        progress += '💡 Этот вирус защищен криптографически<br>';
+                    } else {
+                        progress += '✅ Угроз не обнаружено<br>';
+                    }
+                    progress += '<br>✅ Сканирование завершено!';
+                    document.getElementById('scan-progress').innerHTML = progress;
+                }, 1000);
+            }, 1000);
+        }, 1000);
+    }
+    
+    function runFullScan() {
+        const results = document.getElementById('scan-results');
+        const details = document.getElementById('scan-details');
+        
+        results.style.display = 'block';
+        details.innerHTML = `
+            <p>🔍 Полное сканирование запущено...</p>
+            <div style="width:100%; height:20px; background:#ddd; border-radius:10px; margin:10px 0;">
+                <div id="full-scan-bar" style="width:0%; height:100%; background:#00aaff; border-radius:10px; transition:width 0.5s;"></div>
+            </div>
+            <div id="full-scan-details"></div>
+        `;
+        
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 5;
+            document.getElementById('full-scan-bar').style.width = progress + '%';
+            
+            let detailsText = '';
+            if(progress < 20) detailsText = '▮ Проверка загрузочного сектора...<br>';
+            else if(progress < 40) detailsText += '▮ Анализ памяти...<br>';
+            else if(progress < 60) detailsText += '▮ Проверка системных файлов...<br>';
+            else if(progress < 80) detailsText += '▮ Сканирование установленных программ...<br>';
+            else detailsText += '▮ Финальная проверка...<br>';
+            
+            if(progress >= 100) {
+                clearInterval(interval);
+                detailsText += '<br>✅ Сканирование завершено!<br><br>';
+                if(hasVirus && !virusSolved) {
+                    detailsText += '⚠️ ОБНАРУЖЕНА УГРОЗА:<br>';
+                    detailsText += '<strong>Trojan.RobuxStealer.exe</strong><br>';
+                    detailsText += 'Уровень опасности: КРИТИЧЕСКИЙ<br>';
+                    detailsText += '💡 <strong>АНТИВИРУС НЕ МОЖЕТ УДАЛИТЬ!</strong><br>';
+                    detailsText += 'Этот вирус использует криптографическую защиту<br>';
+                    detailsText += 'Рекомендация: Решить головоломку в вирусе<br>';
+                } else {
+                    detailsText += '✅ Угроз не обнаружено. Система защищена.';
+                }
+            }
+            
+            document.getElementById('full-scan-details').innerHTML = detailsText;
+        }, 200);
+    }
+    
+    // ========== STEAM СИСТЕМА ==========
+    function openSteam() {
+        document.getElementById('desktop').style.display = 'none';
+        document.getElementById('steam-screen').style.display = 'flex';
+        loadSteamLibrary();
+        updateSteamStats();
+    }
+
+    function closeSteam() {
+        document.getElementById('steam-screen').style.display = 'none';
+        document.getElementById('desktop').style.display = 'block';
+    }
+
+    function switchSteamTab(tab) {
+        currentSteamTab = tab;
+        
+        // Обновляем активную кнопку
+        document.querySelectorAll('.steam-nav-item').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        // Показываем нужную вкладку
+        document.querySelectorAll('.steam-tab').forEach(t => t.style.display = 'none');
+        document.getElementById(`steam-${tab}`).style.display = 'block';
+        
+        // Загружаем контент
+        if(tab === 'library') loadSteamLibrary();
+        else if(tab === 'store') loadSteamStore();
+        else if(tab === 'achievements') loadAchievements();
+    }
+
+    function filterGames(filter) {
+        currentGameFilter = filter;
+        document.querySelectorAll('.steam-category').forEach(cat => cat.classList.remove('active'));
+        event.target.classList.add('active');
+        loadSteamLibrary();
+    }
+
+    function loadSteamLibrary() {
+        const gamesList = document.getElementById('games-list');
+        gamesList.innerHTML = '';
+        
+        let filteredGames = steamGames;
+        
+        if(currentGameFilter === 'installed') {
+            filteredGames = steamGames.filter(game => game.installed);
+        } else if(currentGameFilter !== 'all') {
+            filteredGames = steamGames.filter(game => game.type === currentGameFilter);
+        }
+        
+        filteredGames.forEach(game => {
+            const gameCard = createGameCard(game);
+            gamesList.appendChild(gameCard);
+        });
+    }
+
+    function loadSteamStore() {
+        const storeList = document.getElementById('store-games');
+        storeList.innerHTML = '';
+        
+        steamGames.forEach(game => {
+            const storeCard = createStoreCard(game);
+            storeList.appendChild(storeCard);
+        });
+    }
+
+    function loadAchievements() {
+        const achievementsList = document.getElementById('achievements-list');
+        achievementsList.innerHTML = '';
+        
+        steamAchievements.forEach(ach => {
+            const achCard = document.createElement('div');
+            achCard.className = 'achievement-card';
+            achCard.innerHTML = `
+                <div class="achievement-icon ${ach.unlocked ? '' : 'achievement-locked'}">
+                    ${ach.icon}
+                </div>
+                <div class="achievement-title">${ach.title}</div>
+                <div class="achievement-desc">${ach.description}</div>
+                <div style="font-size: 10px; color: #66c0f4; margin-top: 5px;">
+                    ${ach.unlocked ? '🔓 Разблокировано' : '🔒 Заблокировано'}
+                </div>
+            `;
+            achievementsList.appendChild(achCard);
+        });
+    }
+
+    function createGameCard(game) {
+        const card = document.createElement('div');
+        card.className = 'steam-game-card';
+        card.dataset.gameId = game.id;
+        
+        const coverColors = {
+            'cyber_bg': 'linear-gradient(135deg, #00ffcc, #0099cc)',
+            'zombie_bg': 'linear-gradient(135deg, #228B22, #006400)',
+            'word_bg': 'linear-gradient(135deg, #ff9900, #ff3300)',
+            'tower_bg': 'linear-gradient(135deg, #6666ff, #3333cc)',
+            'shooting_bg': 'linear-gradient(135deg, #ff4444, #cc0000)',
+            'block_bg': 'linear-gradient(135deg, #8B4513, #654321)',
+            'horror_bg': 'linear-gradient(135deg, #660066, #330033)',
+            'code_bg': 'linear-gradient(135deg, #00cc00, #009900)',
+            'space_bg': 'linear-gradient(135deg, #000066, #000033)',
+            'memory_bg': 'linear-gradient(135deg, #ff66ff, #cc00cc)',
+            'gta_bg': 'linear-gradient(135deg, #9900ff, #6600cc)',
+            'roblox_bg': 'linear-gradient(135deg, #ff0000, #cc0000)'
+        };
+        
+        const status = game.installed ? 'Установлена' : 'Не установлена';
+        const statusClass = game.installed ? 'status-installed' : 'status-uninstalled';
+        
+        card.innerHTML = `
+            <div class="game-cover" style="background: ${coverColors[game.cover] || '#66c0f4'};">
+                <div class="game-status ${statusClass}">${status}</div>
+            </div>
+            <div class="game-info">
+                <div class="game-title">${game.title}</div>
+                <div class="game-genre">${game.genre}</div>
+                <div class="game-playtime">Наиграно: ${game.playtime} минут</div>
+                <div class="game-actions">
+                    ${game.actions.includes('play') ? 
+                        `<button class="game-btn play-btn" onclick="playGame(${game.id})">ИГРАТЬ</button>` : ''}
+                    ${game.actions.includes('install') ? 
+                        `<button class="game-btn install-btn" onclick="installGame(${game.id})">УСТАНОВИТЬ</button>` : ''}
+                    ${game.actions.includes('play_external') ? 
+                        `<button class="game-btn play-btn" onclick="playExternalGame('${game.title}')">ЗАПУСТИТЬ</button>` : ''}
+                </div>
+            </div>
+        `;
+        
+        return card;
+    }
+
+    function createStoreCard(game) {
+        const card = document.createElement('div');
+        card.className = 'steam-game-card';
+        
+        const coverColors = {
+            'cyber_bg': 'linear-gradient(135deg, #00ffcc, #0099cc)',
+            'zombie_bg': 'linear-gradient(135deg, #228B22, #006400)',
+            'word_bg': 'linear-gradient(135deg, #ff9900, #ff3300)',
+            'tower_bg': 'linear-gradient(135deg, #6666ff, #3333cc)',
+            'shooting_bg': 'linear-gradient(135deg, #ff4444, #cc0000)',
+            'block_bg': 'linear-gradient(135deg, #8B4513, #654321)',
+            'horror_bg': 'linear-gradient(135deg, #660066, #330033)',
+            'code_bg': 'linear-gradient(135deg, #00cc00, #009900)',
+            'space_bg': 'linear-gradient(135deg, #000066, #000033)',
+            'memory_bg': 'linear-gradient(135deg, #ff66ff, #cc00cc)',
+            'gta_bg': 'linear-gradient(135deg, #9900ff, #6600cc)',
+            'roblox_bg': 'linear-gradient(135deg, #ff0000, #cc0000)'
+        };
+        
+        card.innerHTML = `
+            <div class="game-cover" style="background: ${coverColors[game.cover] || '#66c0f4'};">
+                <div class="game-status ${game.installed ? 'status-installed' : 'status-uninstalled'}">
+                    ${game.installed ? 'В БИБЛИОТЕКЕ' : 'КУПИТЬ'}
+                </div>
+            </div>
+            <div class="game-info">
+                <div class="game-title">${game.title}</div>
+                <div class="game-genre">${game.genre}</div>
+                <div style="color: #c6d4df; font-size: 12px; margin: 10px 0;">
+                    ${game.description}
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="color: #66c0f4; font-weight: bold;">
+                        ${game.storePrice === 0 ? 'БЕСПЛАТНО' : game.storePrice + ' ₽'}
+                    </div>
+                    ${game.installed ? 
+                        '<button class="game-btn play-btn" style="padding: 5px 10px;">В БИБЛИОТЕКЕ</button>' :
+                        `<button class="game-btn install-btn" onclick="buyGame(${game.id})" style="padding: 5px 10px;">
+                            ${game.storePrice === 0 ? 'ДОБАВИТЬ' : 'КУПИТЬ'}
+                        </button>`
+                    }
+                </div>
+            </div>
+        `;
+        
+        return card;
+    }
+
+    function updateSteamStats() {
+        const installedGames = steamGames.filter(g => g.installed).length;
+        const totalPlaytime = steamGames.reduce((sum, game) => sum + game.playtime, 0);
+        const unlockedAchievements = steamAchievements.filter(a => a.unlocked).length;
+        
+        document.getElementById('game-count').textContent = installedGames;
+        document.getElementById('playtime-total').textContent = `${Math.floor(totalPlaytime/60)}ч ${totalPlaytime%60}м`;
+        document.getElementById('achievement-count').textContent = `${unlockedAchievements}/${steamAchievements.length}`;
+    }
+
+    function playGame(gameId) {
+        const game = steamGames.find(g => g.id === gameId);
+        if(!game) return;
+        
+        currentGame = game;
+        document.getElementById('game-window-title').textContent = game.title;
+        document.getElementById('game-window').style.display = 'flex';
+        
+        // Загружаем игру в контейнер
+        const gameContainer = document.getElementById('game-container');
+        gameContainer.innerHTML = '';
+        
+        switch(gameId) {
+            case 1: // Cyber Detective
+                loadCyberDetective(gameContainer);
+                break;
+            case 2: // Zombie Survival Pro
+                loadZombieSurvival(gameContainer);
+                break;
+            case 3: // Word Hunter
+                loadWordHunter(gameContainer);
+                break;
+            case 5: // Shooting Range Sim
+                loadShootingRange(gameContainer);
+                break;
+            case 7: // Horror Mansion
+                loadHorrorMansion(gameContainer);
+                break;
+            case 10: // Memory Matrix
+                loadMemoryMatrix(gameContainer);
+                break;
+            default:
+                gameContainer.innerHTML = `
+                    <div style="color: white; text-align: center; padding: 50px;">
+                        <h2>${game.title}</h2>
+                        <p>Демо-версия игры</p>
+                        <p>Для полной версии приобретите игру в магазине Steam</p>
+                        <button onclick="switchSteamTab('store')" style="margin-top: 20px; padding: 10px 20px; background: #66c0f4; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            Перейти в магазин
+                        </button>
+                    </div>
+                `;
+        }
+    }
+
+    function playExternalGame(gameTitle) {
+        if(gameTitle === 'GTA V') {
+            openGame('gta');
+            closeSteam();
+        } else if(gameTitle === 'ROBLOX') {
+            openGame('roblox');
+            closeSteam();
+        }
+    }
+
+    function installGame(gameId) {
+        const game = steamGames.find(g => g.id === gameId);
+        if(!game || game.installed) return;
+        
+        downloadingGame = game;
+        document.getElementById('download-game-title').textContent = `Установка: ${game.title}`;
+        document.getElementById('download-overlay').style.display = 'flex';
+        
+        let progress = 0;
+        const totalSize = Math.floor(Math.random() * 5000) + 1000; // 1-6GB
+        let downloaded = 0;
+        
+        downloadInterval = setInterval(() => {
+            // Симулируем загрузку
+            const speed = Math.random() * 5 + 1; // 1-6 MB/s
+            downloaded += speed;
+            progress = (downloaded / totalSize) * 100;
+            
+            if(progress > 100) progress = 100;
+            
+            document.getElementById('download-progress-bar').style.width = progress + '%';
+            document.getElementById('download-status').textContent = progress < 100 ? 
+                `Загрузка... ${progress.toFixed(1)}%` : 'Установка...';
+            document.getElementById('download-speed').textContent = `Скорость: ${speed.toFixed(1)} MB/s`;
+            
+            const remaining = (totalSize - downloaded) / speed;
+            if(remaining > 0) {
+                const minutes = Math.floor(remaining / 60);
+                const seconds = Math.floor(remaining % 60);
+                document.getElementById('download-time').textContent = `Осталось: ${minutes}м ${seconds}с`;
+            }
+            
+            if(progress >= 100) {
+                clearInterval(downloadInterval);
+                setTimeout(() => {
+                    game.installed = true;
+                    document.getElementById('download-overlay').style.display = 'none';
+                    alert(`Игра "${game.title}" успешно установлена!`);
+                    loadSteamLibrary();
+                    updateSteamStats();
+                    
+                    // Разблокируем достижение
+                    unlockAchievement(1);
+                    
+                    downloadingGame = null;
+                }, 1000);
+            }
+        }, 200);
+    }
+
+    function buyGame(gameId) {
+        const game = steamGames.find(g => g.id === gameId);
+        if(!game) return;
+        
+        if(game.storePrice === 0) {
+            installGame(gameId);
+        } else {
+            alert(`Для покупки "${game.title}" за ${game.storePrice} ₽\n\nВведите данные банковской карты:\n\nНомер карты: [_____________]\nСрок действия: [__/__]\nCVV: [___]\n\n(В демо-версии покупки отключены)`);
+        }
+    }
+
+    function cancelDownload() {
+        if(downloadInterval) {
+            clearInterval(downloadInterval);
+            downloadInterval = null;
+        }
+        document.getElementById('download-overlay').style.display = 'none';
+        downloadingGame = null;
+        alert('Загрузка отменена');
+    }
+
+    function closeGame() {
+        document.getElementById('game-window').style.display = 'none';
+        currentGame = null;
+    }
+
+    function unlockAchievement(achievementId) {
+        const achievement = steamAchievements.find(a => a.id === achievementId);
+        if(achievement && !achievement.unlocked) {
+            achievement.unlocked = true;
+            alert(`🏆 ДОСТИЖЕНИЕ РАЗБЛОКИРОВАНО!\n\n"${achievement.title}"\n${achievement.description}`);
+            updateSteamStats();
+        }
+    }
+
+    // ========== МИНИ-ИГРЫ STEAM ==========
+    
+    // WORD HUNTER (Игра в слова)
+    function loadWordHunter(container) {
+        const words = ['ПРОГРАММА', 'КОМПЬЮТЕР', 'ИГРА', 'STEAM', 'ВИРУС', 'ПАРОЛЬ', 'КЛАВИАТУРА', 'МОНИТОР'];
+        const gridSize = 10;
+        let foundWords = [];
+        
+        // Создаем сетку букв
+        const letters = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
+        let grid = [];
+        
+        // Заполняем сетку случайными буквами
+        for(let i = 0; i < gridSize; i++) {
+            grid[i] = [];
+            for(let j = 0; j < gridSize; j++) {
+                grid[i][j] = letters[Math.floor(Math.random() * letters.length)];
+            }
+        }
+        
+        // Размещаем слова в сетке
+        words.forEach(word => {
+            const direction = Math.random() > 0.5 ? 'horizontal' : 'vertical';
+            const row = Math.floor(Math.random() * (gridSize - word.length));
+            const col = Math.floor(Math.random() * (gridSize - word.length));
+            
+            for(let i = 0; i < word.length; i++) {
+                if(direction === 'horizontal') {
+                    grid[row][col + i] = word[i];
+                } else {
+                    grid[row + i][col] = word[i];
+                }
+            }
+        });
+        
+        container.innerHTML = `
+            <div class="word-puzzle-container">
+                <h2>WORD HUNTER</h2>
+                <p>Найдите все слова в сетке (${words.length} слов)</p>
+                
+                <div class="puzzle-grid" id="word-grid"></div>
+                
+                <div class="puzzle-words">
+                    <h3>Слова для поиска:</h3>
+                    <div id="words-list" style="color: ${foundWords.length === words.length ? '#5c7e10' : '#c6d4df'}">
+                        ${words.map(word => 
+                            `<span style="margin: 0 10px; text-decoration: ${foundWords.includes(word) ? 'line-through' : 'none'}">
+                                ${word}
+                            </span>`
+                        ).join('')}
+                    </div>
+                </div>
+                
+                <div class="word-hint">
+                    Кликайте на буквы, чтобы выделять слова
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <div id="word-score">Найдено слов: 0/${words.length}</div>
+                    <button onclick="checkWordHunter()" style="margin-top: 10px; padding: 10px 20px; background: #66c0f4; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        Проверить
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Заполняем сетку
+        const gridElement = document.getElementById('word-grid');
+        for(let i = 0; i < gridSize; i++) {
+            for(let j = 0; j < gridSize; j++) {
+                const cell = document.createElement('div');
+                cell.className = 'puzzle-cell';
+                cell.textContent = grid[i][j];
+                cell.dataset.row = i;
+                cell.dataset.col = j;
+                cell.onclick = function() {
+                    this.classList.toggle('found');
+                    checkFoundWords();
+                };
+                gridElement.appendChild(cell);
+            }
+        }
+        
+        window.checkFoundWords = function() {
+            // В реальной игре здесь была бы логика проверки слов
+            // В демо-версии просто считаем выделенные клетки
+            const foundCells = document.querySelectorAll('.puzzle-cell.found').length;
+            const score = Math.min(words.length, Math.floor(foundCells / 5));
+            
+            document.getElementById('word-score').textContent = `Найдено слов: ${score}/${words.length}`;
+            
+            if(score === words.length) {
+                unlockAchievement(2);
+                alert('🎉 Поздравляем! Вы нашли все слова!');
+            }
+        };
+        
+        window.checkWordHunter = function() {
+            const foundCells = document.querySelectorAll('.puzzle-cell.found').length;
+            const score = Math.min(words.length, Math.floor(foundCells / 5));
+            
+            if(score > 0) {
+                alert(`Вы нашли ${score} из ${words.length} слов!`);
+                if(score === words.length) {
+                    unlockAchievement(2);
+                }
+            } else {
+                alert('Пока не найдено ни одного слова. Продолжайте искать!');
+            }
+        };
+    }
+    
+    // SHOOTING RANGE SIM
+    function loadShootingRange(container) {
+        let score = 0;
+        let timeLeft = 30;
+        let gameActive = true;
+        
+        container.innerHTML = `
+            <div class="shooting-range">
+                <div class="score-display">Очки: <span id="shooting-score">0</span></div>
+                <div class="timer-display">Время: <span id="shooting-timer">30</span>с</div>
+            </div>
+        `;
+        
+        const range = container.querySelector('.shooting-range');
+        
+        // Таймер игры
+        const timer = setInterval(() => {
+            if(!gameActive) return;
+            
+            timeLeft--;
+            document.getElementById('shooting-timer').textContent = timeLeft;
+            
+            if(timeLeft <= 0) {
+                gameActive = false;
+                clearInterval(timer);
+                clearInterval(targetSpawner);
+                
+                // Удаляем все цели
+                document.querySelectorAll('.target').forEach(t => t.remove());
+                
+                setTimeout(() => {
+                    alert(`Игра окончена!\n\nВаш результат: ${score} очков\n\n${score >= 30 ? 'Отличная точность!' : 'Попрактикуйтесь еще!'}`);
+                    
+                    if(score >= 50) {
+                        unlockAchievement(3);
+                    }
+                }, 500);
+            }
+        }, 1000);
+        
+        // Создаем цели
+        const targetSpawner = setInterval(() => {
+            if(!gameActive) return;
+            
+            const target = document.createElement('div');
+            target.className = 'target';
+            target.style.left = Math.random() * 90 + '%';
+            target.style.top = Math.random() * 80 + '%';
+            
+            target.onclick = function() {
+                if(!gameActive) return;
+                
+                this.classList.add('hit');
+                score += 10;
+                document.getElementById('shooting-score').textContent = score;
+                
+                setTimeout(() => {
+                    this.remove();
+                }, 500);
+            };
+            
+            range.appendChild(target);
+            
+            // Автоматическое удаление через 3 секунды
+            setTimeout(() => {
+                if(target.parentNode) {
+                    target.remove();
+                }
+            }, 3000);
+        }, 1000);
+    }
+    
+    // ZOMBIE SURVIVAL
+    function loadZombieSurvival(container) {
+        container.innerHTML = `
+            <div style="color: white; text-align: center; padding: 50px;">
+                <h2>Zombie Survival Pro</h2>
+                <p>Для выживания в зомби-апокалипсисе нужно:</p>
+                <ul style="text-align: left; margin: 20px auto; max-width: 400px;">
+                    <li>Собирать ресурсы</li>
+                    <li>Строить укрепления</li>
+                    <li>Защищаться от зомби</li>
+                    <li>Искать других выживших</li>
+                </ul>
+                <p style="margin-top: 30px;">Полная версия игры доступна в магазине!</p>
+                <button onclick="switchSteamTab('store')" style="margin-top: 20px; padding: 10px 20px; background: #66c0f4; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    Купить полную версию
+                </button>
+            </div>
+        `;
+    }
+    
+    // CYBER DETECTIVE
+    function loadCyberDetective(container) {
+        const clues = [
+            "IP адрес: 192.168.1.100",
+            "Время взлома: 03:47",
+            "Следы в логах: user: admin",
+            "Зашифрованное сообщение: VHJ1c2lraQ==",
+            "Местоположение: сервер #4"
+        ];
+        
+        let solvedClues = 0;
+        
+        container.innerHTML = `
+            <div style="color: white; padding: 20px; font-family: 'Courier New', monospace;">
+                <h2 style="color: #00ffcc;">CYBER DETECTIVE</h2>
+                <p style="color: #66c0f4;">Расследуйте киберпреступление</p>
+                
+                <div style="background: rgba(0, 0, 0, 0.5); padding: 20px; margin: 20px 0; border-left: 5px solid #00ffcc;">
+                    <h3>ДЕЛО #001: Взлом сервера</h3>
+                    <p>Неизвестный хакер проник в систему. Соберите улики и найдите виновного.</p>
+                </div>
+                
+                <div id="clues-container" style="margin: 20px 0;"></div>
+                
+                <div style="background: rgba(0, 255, 204, 0.1); padding: 15px; border-radius: 5px;">
+                    <h4>Вопросы для расследования:</h4>
+                    <ol>
+                        <li>Кто был пользователем во время взлома?</li>
+                        <li>Что означает зашифрованное сообщение?</li>
+                        <li>Откуда шел взлом?</li>
+                    </ol>
+                    
+                    <div style="margin-top: 20px;">
+                        <input type="text" id="detective-answer" placeholder="Ваша версия..." style="width: 300px; padding: 10px; background: #000; color: #00ffcc; border: 1px solid #00ffcc;">
+                        <button onclick="checkDetectiveAnswer()" style="padding: 10px 20px; background: #00ffcc; color: black; border: none; margin-left: 10px; cursor: pointer;">
+                            Проверить
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="detective-result" style="margin-top: 20px;"></div>
+            </div>
+        `;
+        
+        const cluesContainer = document.getElementById('clues-container');
+        clues.forEach((clue, index) => {
+            const clueDiv = document.createElement('div');
+            clueDiv.style.cssText = 'background: rgba(42, 71, 94, 0.5); padding: 10px; margin: 5px 0; border-radius: 3px; cursor: pointer;';
+            clueDiv.innerHTML = `<span style="color: #8f98a0;">[${index + 1}]</span> <span class="clue-text" style="color: #66c0f4;">${'?'.repeat(clue.length)}</span>`;
+            
+            clueDiv.onclick = function() {
+                if(!this.classList.contains('revealed')) {
+                    this.classList.add('revealed');
+                    this.querySelector('.clue-text').textContent = clue;
+                    this.querySelector('.clue-text').style.color = '#00ffcc';
+                    solvedClues++;
+                    
+                    if(solvedClues === clues.length) {
+                        unlockAchievement(6);
+                    }
+                }
+            };
+            
+            cluesContainer.appendChild(clueDiv);
+        });
+        
+        window.checkDetectiveAnswer = function() {
+            const answer = document.getElementById('detective-answer').value.toLowerCase();
+            const resultDiv = document.getElementById('detective-result');
+            
+            if(answer.includes('admin') && answer.includes('trusiki') && answer.includes('сервер')) {
+                resultDiv.innerHTML = '<div style="color: #00ffcc; font-weight: bold;">✅ Верно! Вы раскрыли дело! Хакером был системный администратор.</div>';
+                unlockAchievement(6);
+            } else {
+                resultDiv.innerHTML = '<div style="color: #ff4444;">❌ Неверно. Изучите все улики и попробуйте снова.</div>';
+            }
+        };
+    }
+    
+    function loadHorrorMansion(container) {
+        container.innerHTML = `
+            <div style="color: white; text-align: center; padding: 50px; background: linear-gradient(#330033, #000); height: 100%;">
+                <h2 style="color: #ff66ff; text-shadow: 0 0 10px #ff00ff;">HORROR MANSION</h2>
+                <p style="color: #cc99cc;">Заброшенный особняк с призраками</p>
+                
+                <div style="margin: 40px auto; width: 300px; height: 200px; background: #660066; border: 5px solid #ff00ff; position: relative;">
+                    <div id="ghost" style="position: absolute; width: 50px; height: 50px; background: white; border-radius: 50%; top: 75px; left: 125px; display: none;"></div>
+                </div>
+                
+                <p>Кликните на экран, чтобы включить фонарик и увидеть призрака</p>
+                <p style="font-size: 12px; color: #9966cc;">(Испугались? Это же всего лишь игра!)</p>
+                
+                <button onclick="showGhost()" style="margin-top: 20px; padding: 10px 20px; background: #ff00ff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    Включить фонарик
+                </button>
+            </div>
+        `;
+        
+        window.showGhost = function() {
+            const ghost = document.getElementById('ghost');
+            ghost.style.display = 'block';
+            
+            // Анимация призрака
+            let pos = 125;
+            let direction = 1;
+            const move = setInterval(() => {
+                pos += 5 * direction;
+                ghost.style.left = pos + 'px';
+                
+                if(pos > 250 || pos < 0) {
+                    direction *= -1;
+                }
+            }, 100);
+            
+            setTimeout(() => {
+                clearInterval(move);
+                ghost.style.display = 'none';
+                alert('👻 Буууу! Призрак испугался и убежал!');
+            }, 3000);
+        };
+    }
+    
+    function loadMemoryMatrix(container) {
+        container.innerHTML = `
+            <div style="color: white; text-align: center; padding: 20px;">
+                <h2 style="color: #ff66ff;">MEMORY MATRIX</h2>
+                <p>Запомните последовательность!</p>
+                
+                <div id="memory-sequence" style="font-size: 48px; letter-spacing: 20px; margin: 30px 0;"></div>
+                
+                <div id="memory-input" style="margin: 20px 0;"></div>
+                
+                <div>
+                    <button onclick="startMemoryGame()" style="padding: 10px 20px; background: #ff66ff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        Начать игру
+                    </button>
+                    <div id="memory-result" style="margin-top: 20px;"></div>
+                </div>
+            </div>
+        `;
+        
+        window.startMemoryGame = function() {
+            const sequence = [];
+            for(let i = 0; i < 5; i++) {
+                sequence.push(Math.floor(Math.random() * 10));
+            }
+            
+            const sequenceDiv = document.getElementById('memory-sequence');
+            const inputDiv = document.getElementById('memory-input');
+            const resultDiv = document.getElementById('memory-result');
+            
+            // Показываем последовательность
+            sequenceDiv.textContent = sequence.join(' ');
+            
+            setTimeout(() => {
+                sequenceDiv.textContent = '? ? ? ? ?';
+                
+                // Создаем поле для ввода
+                inputDiv.innerHTML = `
+                    <p>Введите последовательность:</p>
+                    <input type="text" id="user-sequence" maxlength="5" style="font-size: 24px; width: 150px; text-align: center;">
+                    <button onclick="checkMemorySequence([${sequence}])" style="padding: 10px 20px; background: #66c0f4; color: white; border: none; margin-left: 10px; cursor: pointer;">
+                        Проверить
+                    </button>
+                `;
+            }, 3000);
+        };
+        
+        window.checkMemorySequence = function(correctSequence) {
+            const userInput = document.getElementById('user-sequence').value;
+            const resultDiv = document.getElementById('memory-result');
+            
+            if(userInput === correctSequence.join('')) {
+                resultDiv.innerHTML = '<div style="color: #00ff00;">✅ Отлично! Вы запомнили последовательность!</div>';
+                unlockAchievement(10);
+            } else {
+                resultDiv.innerHTML = '<div style="color: #ff4444;">❌ Неверно. Правильная последовательность: ' + correctSequence.join('') + '</div>';
+            }
+        };
+    }
+
+    // ========== ИНИЦИАЛИЗАЦИЯ ==========
+    window.addEventListener('load', () => {
+        // Инициализация Discord
+        if(!localStorage.getItem('discord_initialized')) {
+            const initMessages = [
+                {channel: 'general', sender: 'anon', text: 'Кто-то тут?'},
+                {channel: 'general', sender: 'girl', text: 'Мне сегодня что-то страшно...'},
+                {channel: 'misha', sender: 'misha', text: 'Иногда я просто хочу, чтобы меня поняли.'},
+                {channel: 'gugu', sender: 'gugu', text: 'Всегда носи с собой свисток!'},
+                {channel: 'police', sender: 'police', text: 'Городской патруль усилил дежурство.'},
+                {channel: 'psycho', sender: 'psycho', text: 'Панические атаки - это нормальная реакция на ненормальные обстоятельства.'}
+            ];
+            
+            initMessages.forEach(msg => {
+                const history = JSON.parse(localStorage.getItem(`discord_${msg.channel}`)) || [];
+                history.push({sender: msg.sender, text: msg.text, time: '22:00'});
+                localStorage.setItem(`discord_${msg.channel}`, JSON.stringify(history));
+            });
+            
+            localStorage.setItem('discord_initialized', 'true');
+        }
+        
+        // Загружаем настройки системы
+        loadSettings();
+        
+        // Загружаем настройки пользователя
+        loadDiscordSettings();
+        
+        // Генерируем случайный ник если нет сохраненного
+        if (!localStorage.getItem('discordUser')) {
+            discordUser.username = 'User_' + Math.floor(Math.random() * 10000);
+            updateUserPreview();
+        }
+        
+        // Обновляем имя пользователя в Steam
+        document.getElementById('steam-username').textContent = discordUser.username;
+    });
+</script>
+</body>
+</html>
